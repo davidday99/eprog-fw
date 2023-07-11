@@ -1,0 +1,66 @@
+Command List:
+    
+    General:
+        Command     Description                 Parameters                              Return value
+
+        0x00        NOP                         none                                    <ACK>
+        0x01        get_interface_version       none                                    <ACK> <16-bit version>
+        0x02        enable_opbuf_mode           none                                    <ACK> / <NAK>
+        0x03        disable_opbuf_mode          none                                    <ACK> / <NAK>
+        0x04        delay_100ns                 <32-bit nsecs>                          <ACK> / <NAK>
+        0x05        delay_1us                   <32-bit usecs>                          <ACK> / <NAK>
+        0x06        execute_opbuf               none                                    <ACK> / <NAK> <16-bit index>
+        0x07        reset_opbuf                 none                                    <ACK> / <NAK>
+        0x08        read_databuf                <32-bit nlen>                           <ACK> <nbytes> / <NAK>
+        0x09        reset_databuf               none                                    <ACK> / <NAK>
+            
+    Parallel:
+        Command     Description                         Parameters                      Return value
+        
+        0x0A        set_parallel_io_mode        <8-bit IO_MODE_READ/IO_MODE_WRITE>      <ACK> / <NAK>
+        0x0B        get_parallel_io_mode        none                                    <ACK> <8-bit DATA_MODE>
+        0x0C        set_address_bus_width       <8-bit BUS_WIDTH>                       <ACK> / <NAK>
+        0x0D        get_address_bus_width       none                                    <ACK> <8-bit BUS_WIDTH>
+        0x0E        set_address                 <32-bit address>                        <ACK> / <NAK> 
+        0x0F        set_data                    <8-bit data>                            <ACK> / <NAK> 
+        0x10        parallel_read               none                                    <ACK> <8-bit data> / <NAK>
+        0x11        enable_chip                 none                                    <ACK> / <NAK>
+        0x12        disable_chip                none                                    <ACK> / <NAK>
+
+    SPI:
+        Command     Description                         Parameters                      Return value
+
+        0x13        set_spi_clock_freq          <32-bit SPI_CLOCK_FREQ>                 <ACK> / <NAK>
+        0x14        get_spi_clock_freq          none                                    <ACK> <32-bit SPI_CLOCK_FREQ>
+        0x15        set_spi_mode                <8-bit SPI_MODE>                        <ACK> / <NAK>
+        0x16        get_spi_mode                none                                    <ACK> <8-bit SPI_MODE>
+        0x18        spi_write                   <32-bit nlen> <nbytes>                  <ACK> / <NAK>
+        0x19        spi_read                    <32-bit nop> <nlen>                     <ACK> <nbytes> / <NAK>
+        0x1A        set_cs                      none                                    <ACK> / <NAK>
+        0x1B        clear_cs                    none                                    <ACK> / <NAK>
+
+    I2C:
+        N/A 
+         
+There are 3 distinct buffers:
+
+1) COM Buffer
+    This is the buffer used for general communication between the programmer and the host. 
+    Host requests and programmer responses will be written here as they make their way 
+    between the host and the programmer.
+
+2) Operation Buffer
+    The operation buffer allows you to send multiple commands to the programmer before executing them. 
+    This enables the commands to run without incurring the communication overhead required to send each command. 
+    When execute_opbuf is called, all the commands in the operation buffer are ran sequentially.
+    If any command fails, execution stops, and a NAK is returned along with which command in the buffer failed,
+    i.e., the first command in the buffer, second command, etc. When reset_opbuf is called, the operation buffer
+    is cleared.
+
+3) Data Buffer
+    The data buffer holds read data from the EEPROM where it can be transferred back to the host.
+    The commands parallel_read and spi_read both copy the data read from the EEPROM into the data buffer
+    which can then be read from the host using the read_databuf command. The data buffer pointer will
+    automatically be incremented as data is written to it. When reset_databuf is called, the pointer is 
+    reset and the buffer is zeroed out.
+    
