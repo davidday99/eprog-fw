@@ -33,15 +33,9 @@ enum SpiMode {
 /* General Commands */
 int eprog_getInterfaceVersion(void);
 int eprog_getSupportedBusTypes(void);
-int eprog_getConnectedAddressLines(void);
-int eprog_getSerialBufferSize(void);
-int eprog_getTransmitBufferSize(void);
-int eprog_getReceiveBufferSize(void);
-
-/* Programmer Commands */
-enum BusType eprog_getBusType(void);
-int eprog_setBusType(enum BusType);
-void eprog_SystemWait(unsigned long);
+int eprog_getBufferSize(void);
+int enable_io_pins(void);
+int disable_io_pins(void);
 
 /* Parallel Commands */
 enum AddressBusWidth eprog_getAddressBusWidth(void);
@@ -53,6 +47,8 @@ int eprog_parallelRead(unsigned long address, char *buf, size_t count);
 enum SpiFrequency eprog_getSpifrequency(void);
 int eprog_setSpifrequency(enum SpiFrequency);
 int eprog_setSpiMode(enum SpiMode);
+int spi_write(const char *buf, size_t count);
+int spi_read(const char *buf, size_t count);
 
 #endif /* __EPROG_H__ */
 
