@@ -1,6 +1,7 @@
 PROJECT=main
 
 SRCS=$(wildcard src/*.c) \
+		 $(wildcard src/app/*.c) \
 		 $(wildcard src/*.S) \
 		 $(wildcard src/*.s) \
 		 gcc/startup_gcc.c \
