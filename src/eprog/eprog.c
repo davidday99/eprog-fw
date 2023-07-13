@@ -1,14 +1,14 @@
 #include <stdint.h>
 #include "eprog.h"
 
-int target_EnableIOPins(void);
-int target_DisableIOPins(void);
-int target_SetAddress(enum AddressBusWidth busWidth, uint32_t address);
-int target_SetData(uint32_t data);
-uint32_t target_GetData();
-int target_Delay100ns(uint32_t delay);
-int target_EnableChip(void);
-int target_DisableChip(void);
+int programmer_EnableIOPins(void);
+int programmer_DisableIOPins(void);
+int programmer_SetAddress(enum AddressBusWidth busWidth, uint32_t address);
+int programmer_SetData(uint32_t data);
+uint32_t programmer_GetData();
+int programmer_Delay100ns(uint32_t delay);
+int programmer_EnableChip(void);
+int programmer_DisableChip(void);
 
 static const uint16_t Version = 0x01;
 static const uint8_t SupportedBusTypes = BUS_TYPE_PARALLEL | BUS_TYPE_SPI;  // Put into a conf file.
@@ -37,11 +37,11 @@ uint32_t eprog_getSupportedBusTypes(void) {
 uint32_t eprog_getBufferSize(void);
 
 uint8_t eprog_EnableIOPins(void) { 
-    return target_EnableIOPins();
+    return programmer_EnableIOPins();
 }
 
 uint8_t eprog_DisableIOPins(void) { 
-    return target_DisableIOPins();
+    return programmer_DisableIOPins();
 }
 
 /*******************************************
@@ -62,13 +62,13 @@ uint8_t eprog_setAddressBusWidth(enum AddressBusWidth busWidth) {
 uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count) {
     // Validate parameters 
     // Set programmer to Parallel Output Mode
-    target_EnableChip();
+    programmer_EnableChip();
     for (size_t i = 0; i < count; i++) {
-        target_SetAddress(CurrentAddressBusWidth, address + i);
-        target_Delay100ns(ParallelAddressHoldTime);
-        buf[i] = target_GetData();
+        programmer_SetAddress(CurrentAddressBusWidth, address + i);
+        programmer_Delay100ns(ParallelAddressHoldTime);
+        buf[i] = programmer_GetData();
     } 
-    target_DisableChip();
+    programmer_DisableChip();
     return 1;
 }
 
@@ -76,11 +76,11 @@ uint8_t eprog_parallelWrite(unsigned long address, char *buf, size_t count) {
     // Add parameter validation
     // Set programmer to Parallel Input Mode
     for (size_t i = 0; i < count; i++) {
-        target_SetAddress(CurrentAddressBusWidth, address + i);
-        target_SetData(buf[i]);
-        target_Delay100ns(ParallelAddressHoldTime);
-        target_EnableChip();
-        target_Delay100ns(ChipEnablePulseWidthTime);
+        programmer_SetAddress(CurrentAddressBusWidth, address + i);
+        programmer_SetData(buf[i]);
+        programmer_Delay100ns(ParallelAddressHoldTime);
+        programmer_EnableChip();
+        programmer_Delay100ns(ChipEnablePulseWidthTime);
     }
     return 1;
 }
