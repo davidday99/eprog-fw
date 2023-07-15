@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "eprog.h"
 
+int programmer_InitParallel(void);
+int programmer_InitSpi(void);
 int programmer_EnableIOPins(void);
 int programmer_DisableIOPins(void);
 int programmer_SetAddress(enum AddressBusWidth busWidth, uint32_t address);
