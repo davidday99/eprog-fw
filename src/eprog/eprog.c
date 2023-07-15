@@ -10,12 +10,16 @@ static char *TxBuf;
 static size_t RxBufSize;
 static size_t TxBufSize;
 
+static enum BusMode CurrentBusMode = BUS_MODE_NOT_SET;
 static enum AddressBusWidth CurrentAddressBusWidth = ADDRESS_BUS_WIDTH_8;
 static enum SpiFrequency CurrentSpiFrequency = SPI_FREQ_1MHZ;
 static enum SpiMode CurrentSpiMode = SPI_MODE_0; 
 
 static uint32_t ParallelAddressHoldTime;
 static uint32_t ChipEnablePulseWidthTime;
+
+static inline int switchToParallelBusMode(void);
+static inline int switchToSpiBusMode(void);
 
 /*******************************************
 ********************************************
@@ -86,6 +90,12 @@ size_t eprog_RunCommand(void) {
         case EPROG_CMD_PARALLEL_READ:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // address
             memcpy(&arg2_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b)], sizeof(arg1_32b));  // count
+                                                                                               
+            if (!switchToParallelBusMode()) {
+                TxBuf[0] = eprog_NAK; 
+                break;
+            }
+
             if (arg2_32b > TxBufSize || !eprog_parallelRead(arg1_32b, &TxBuf[sizeof(uint8_t)], arg2_32b)) {
                 TxBuf[0] = eprog_NAK; 
             } else {
@@ -95,6 +105,12 @@ size_t eprog_RunCommand(void) {
         case EPROG_CMD_PARALLEL_WRITE:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // address
             memcpy(&arg2_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b)], sizeof(arg1_32b));  // count
+                                                                                                
+            if (!switchToParallelBusMode()) {
+                TxBuf[0] = eprog_NAK; 
+                break;
+            }
+            
             if (!eprog_parallelWrite(arg1_32b, &TxBuf[sizeof(uint8_t)], arg2_32b)) {
                 TxBuf[0] = eprog_NAK;
             } else {
@@ -130,6 +146,12 @@ size_t eprog_RunCommand(void) {
             response_len += sizeof(CurrentSpiMode);
         case EPROG_CMD_SPI_READ:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // count
+
+            if (!switchToSpiBusMode()) {
+                TxBuf[0] = eprog_NAK; 
+                break;
+            }
+
             if (arg1_32b > TxBufSize || !programmer_SpiRead(&RxBuf[sizeof(uint8_t) + sizeof(arg1_32b)], &TxBuf[sizeof(eprog_ACK)], arg1_32b)) {
                 TxBuf[0] = eprog_NAK; 
             } else {
@@ -138,6 +160,12 @@ size_t eprog_RunCommand(void) {
             break;
         case EPROG_CMD_SPI_WRITE:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // count
+
+            if (!switchToSpiBusMode()) {
+                TxBuf[0] = eprog_NAK; 
+                break;
+            }
+
             if (!programmer_SpiWrite(&RxBuf[sizeof(uint8_t) + sizeof(arg1_32b)], arg1_32b)) {
                 TxBuf[0] = eprog_NAK;
             } else {
@@ -221,4 +249,23 @@ uint8_t eprog_setSpifrequency(enum SpiFrequency);
 uint8_t eprog_setSpiMode(enum SpiMode);
 uint8_t spi_read(char *buf, size_t count);
 uint8_t spi_write(const char *buf, size_t count);
+
+
+static inline int switchToParallelBusMode(void) {
+    if ((CurrentBusMode != BUS_MODE_PARALLEL) && (BUS_MODE_PARALLEL & SupportedBusTypes)) {
+        programmer_InitParallel();
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+static inline int switchToSpiBusMode(void) {
+    if ((CurrentBusMode != BUS_MODE_SPI) && (BUS_MODE_SPI & SupportedBusTypes)) {
+        programmer_InitSpi();
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
