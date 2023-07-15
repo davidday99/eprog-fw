@@ -24,7 +24,7 @@ Command List:
         0x08        get_address_hold_time     none                                        <ACK> <32-bit nsec>
         0x09        set_pulse_width_time      <32-bit nsecs>                              <ACK> / <NAK>
         0x0A        get_pulse_width_time      none                                        <ACK> <32-bit nsecs>
-        0x0B        parallel_read             none                                        <ACK> <nbytes> / <NAK>
+        0x0B        parallel_read             <32-bit address> <32-bit nlen>             <ACK> <nbytes> / <NAK>
         0x0C        parallel_write            <32-bit address> <32-bit nlen> <nbytes>     <ACK>
 
     SPI:
