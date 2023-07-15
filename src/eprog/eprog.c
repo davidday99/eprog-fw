@@ -56,37 +56,47 @@ size_t eprog_RunCommand(void) {
             memcpy(&TxBuf[sizeof(eprog_ACK)], &Version, sizeof(Version));
             response_len += sizeof(Version);
             break;
+
         case EPROG_CMD_GET_BUFFER_SIZE:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &RxBufSize, sizeof(RxBufSize));
             response_len += sizeof(RxBufSize);
             break;
+
         case EPROG_CMD_ENABLE_IO_PINS:
             programmer_EnableIOPins();
             break;
+
         case EPROG_CMD_DISABLE_IO_PINS:
             programmer_DisableIOPins();
             break;
+
         case EPROG_CMD_SET_ADDRESS_BUS_WIDTH:
             memcpy(&CurrentAddressBusWidth, &RxBuf[sizeof(uint8_t)], sizeof(CurrentAddressBusWidth));
             break;
+
         case EPROG_CMD_GET_ADDRESS_BUS_WIDTH:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentAddressBusWidth, sizeof(CurrentAddressBusWidth));
             response_len += sizeof(CurrentAddressBusWidth);
             break;
+
         case EPROG_CMD_SET_ADDRESS_HOLD_TIME:
             memcpy(&ParallelAddressHoldTime, &RxBuf[sizeof(uint8_t)], sizeof(ParallelAddressHoldTime));
             break;
+
         case EPROG_CMD_GET_ADDRESS_HOLD_TIME:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &ParallelAddressHoldTime, sizeof(ParallelAddressHoldTime));
             response_len += sizeof(ParallelAddressHoldTime);
             break;
+            
         case EPROG_CMD_SET_PULSE_WIDTH_TIME:
             memcpy(&ChipEnablePulseWidthTime, &RxBuf[sizeof(uint8_t)], sizeof(ChipEnablePulseWidthTime));
             break;
+
         case EPROG_CMD_GET_PULSE_WIDTH_TIME:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &ChipEnablePulseWidthTime, sizeof(ChipEnablePulseWidthTime));
             response_len += sizeof(ChipEnablePulseWidthTime);
             break;
+
         case EPROG_CMD_PARALLEL_READ:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // address
             memcpy(&arg2_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b)], sizeof(arg1_32b));  // count
@@ -102,6 +112,7 @@ size_t eprog_RunCommand(void) {
                 response_len += arg2_32b;
             }
             break;
+
         case EPROG_CMD_PARALLEL_WRITE:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // address
             memcpy(&arg2_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b)], sizeof(arg1_32b));  // count
@@ -117,6 +128,7 @@ size_t eprog_RunCommand(void) {
                 response_len += arg2_32b;
             }
             break;
+
         case EPROG_CMD_SET_SPI_CLOCK_FREQ:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));
             if (arg1_32b != CurrentSpiFrequency) {
@@ -127,10 +139,12 @@ size_t eprog_RunCommand(void) {
                 }
             }
             break;
+
         case EPROG_CMD_GET_SPI_CLOCK_FREQ:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiFrequency, sizeof(CurrentSpiFrequency));
             response_len += sizeof(CurrentSpiFrequency);
             break;
+
         case EPROG_CMD_SET_SPI_MODE:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));
             if (arg1_32b != CurrentSpiMode) {
@@ -141,9 +155,12 @@ size_t eprog_RunCommand(void) {
                 }
             }
             break;
+
         case EPROG_CMD_GET_SPI_MODE:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiMode, sizeof(CurrentSpiMode));
             response_len += sizeof(CurrentSpiMode);
+            break;
+
         case EPROG_CMD_SPI_READ:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // count
 
@@ -158,6 +175,7 @@ size_t eprog_RunCommand(void) {
                 response_len += arg1_32b;
             }
             break;
+
         case EPROG_CMD_SPI_WRITE:
             memcpy(&arg1_32b, &RxBuf[sizeof(eprog_ACK)], sizeof(arg1_32b));  // count
 
@@ -172,6 +190,7 @@ size_t eprog_RunCommand(void) {
                 response_len += arg1_32b;
             }
             break;
+
         default:
             TxBuf[0] = eprog_NAK;
             break;
