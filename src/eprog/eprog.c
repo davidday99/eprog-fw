@@ -4,7 +4,7 @@
 #include "programmer.h"
 
 static const uint16_t Version = 0x01;
-static const uint8_t SupportedBusTypes = BUS_TYPE_PARALLEL | BUS_TYPE_SPI;  // Put into a conf file.
+static const uint8_t SupportedBusTypes = BUS_MODE_PARALLEL | BUS_MODE_SPI;  // Put into a conf file.
 static char *RxBuf;
 static char *TxBuf;
 static size_t RxBufSize;

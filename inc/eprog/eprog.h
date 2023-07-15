@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-enum BusType {
-    BUS_TYPE_PARALLEL = 1,
-    BUS_TYPE_SPI = 2,
-    BUS_TYPE_I2C = 4,
+enum BusMode {
+    BUS_MODE_PARALLEL = 1,
+    BUS_MODE_SPI = 2,
+    BUS_MODE_I2C = 4,
 };
 
 enum AddressBusWidth {
