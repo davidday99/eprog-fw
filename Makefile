@@ -12,7 +12,7 @@ OBJS=$(addprefix $(OBJ)/, \
 	   $(filter-out %.s %.S, $(SRCS:.c=.o)) \
 	   $(filter-out %.c %.s, $(SRCS:.S=.o)))
 BIN=build
-INC= -Iinc
+INC= -Iinc -Iinc/eprog
 
 LD_SCRIPT=gcc/TM4C123GH6PM.ld 
 DEV=/dev/ttyACM0
