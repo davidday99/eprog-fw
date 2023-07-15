@@ -1,5 +1,3 @@
-#ifndef __PROGRAMMER_H__
-#define __PROGRAMMER_H__
 
 #include <stdint.h>
 
@@ -30,6 +28,3 @@ typedef struct _Programmer {
 
 int programmer_InitParallel(Programmer *prog);
 int programmer_InitSpi(Programmer *prog);
-
-#endif /* __PROGRAMMER_H__ */
-
