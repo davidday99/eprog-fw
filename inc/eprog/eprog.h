@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 enum BusMode {
+    BUS_MODE_NOT_SET = 0,
     BUS_MODE_PARALLEL = 1,
     BUS_MODE_SPI = 2,
     BUS_MODE_I2C = 4,
