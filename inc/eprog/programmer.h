@@ -10,7 +10,7 @@ int programmer_EnableIOPins(void);
 int programmer_DisableIOPins(void);
 int programmer_SetAddress(enum AddressBusWidth busWidth, uint32_t address);
 int programmer_SetData(uint32_t data);
-uint32_t programmer_GetData();
+uint32_t programmer_GetData(void);
 int programmer_Delay100ns(uint32_t delay);
 int programmer_EnableChip(void);
 int programmer_DisableChip(void);
