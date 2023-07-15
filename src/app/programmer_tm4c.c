@@ -35,7 +35,55 @@ typedef struct _Programmer {
     SpiModule_t spi;
 } Programmer;
 
-static Programmer *Prog;
+static Programmer _Prog = {
+    .ports = {
+        SYSCTL_PERIPH_GPIOA,
+        SYSCTL_PERIPH_GPIOB,
+        SYSCTL_PERIPH_GPIOC,
+        SYSCTL_PERIPH_GPIOD,
+        SYSCTL_PERIPH_GPIOE,
+        SYSCTL_PERIPH_GPIOF
+    },
+    .A = {
+        {GPIO_PORTB_BASE, GPIO_PIN_5},
+        {GPIO_PORTB_BASE, GPIO_PIN_0},
+        {GPIO_PORTB_BASE, GPIO_PIN_1},
+        {GPIO_PORTE_BASE, GPIO_PIN_4},
+        {GPIO_PORTE_BASE, GPIO_PIN_5},
+        {GPIO_PORTB_BASE, GPIO_PIN_4},
+        {GPIO_PORTA_BASE, GPIO_PIN_5},
+        {GPIO_PORTA_BASE, GPIO_PIN_6},
+        {GPIO_PORTA_BASE, GPIO_PIN_7},
+        {GPIO_PORTF_BASE, GPIO_PIN_1},
+        {GPIO_PORTE_BASE, GPIO_PIN_3},
+        {GPIO_PORTE_BASE, GPIO_PIN_2},
+        {GPIO_PORTE_BASE, GPIO_PIN_1},
+        {GPIO_PORTD_BASE, GPIO_PIN_3},
+        {GPIO_PORTD_BASE, GPIO_PIN_2},
+    },
+    .IO = {
+        {GPIO_PORTA_BASE, GPIO_PIN_3},
+        {GPIO_PORTA_BASE, GPIO_PIN_4},
+        {GPIO_PORTB_BASE, GPIO_PIN_6},
+        {GPIO_PORTB_BASE, GPIO_PIN_7},
+        {GPIO_PORTC_BASE, GPIO_PIN_5},
+        {GPIO_PORTC_BASE, GPIO_PIN_4},
+        {GPIO_PORTE_BASE, GPIO_PIN_0},
+        {GPIO_PORTB_BASE, GPIO_PIN_2},
+
+    },
+    .CEn = {GPIO_PORTA_BASE, GPIO_PIN_2},
+    .OEn = {GPIO_PORTD_BASE, GPIO_PIN_6},
+    .WEn = {GPIO_PORTC_BASE, GPIO_PIN_7},
+    .spi = {
+        .CLK = {GPIO_PORTA_BASE, GPIO_PIN_2},
+        .CS = {GPIO_PORTA_BASE, GPIO_PIN_3},
+        .RX = {GPIO_PORTA_BASE, GPIO_PIN_4},
+        .TX = {GPIO_PORTA_BASE, GPIO_PIN_5}
+    }
+};
+
+static Programmer *Prog = &_Prog;
 
 int programmer_InitParallel(void) {
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
