@@ -31,7 +31,34 @@ enum SpiMode {
     SPI_MODE_3 = 3,
 };
 
+enum eprog_Command {
+    EPROG_CMD_GET_INTERFACE_VERSION,
+    EPROG_CMD_GET_BUFFER_SIZE,
+    EPROG_CMD_ENABLE_IO_PINS,
+    EPROG_CMD_DISABLE_IO_PINS,
+    EPROG_CMD_SET_ADDRESS_BUS_WIDTH,
+    EPROG_CMD_GET_ADDRESS_BUS_WIDTH,
+    EPROG_CMD_SET_ADDRESS_HOLD_TIME,
+    EPROG_CMD_GET_ADDRESS_HOLD_TIME,
+    EPROG_CMD_SET_PULSE_WIDTH_TIME,
+    EPROG_CMD_GET_PULSE_WIDTH_TIME,
+    EPROG_CMD_PARALLEL_READ,
+    EPROG_CMD_PARALLEL_WRITE,
+    EPROG_CMD_SET_SPI_CLOCK_FREQ,
+    EPROG_CMD_GET_SPI_CLOCK_FREQ,
+    EPROG_CMD_SET_SPI_MODE,
+    EPROG_CMD_SPI_READ,
+    EPROG_CMD_SPI_WRITE,
+};
+
+const uint8_t eprog_ACK = 0x05;
+const uint8_t eprog_NAK = 0x06;
+
+/* Control Commands
+
 /* General Commands */
+int eprog_Init(char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
+size_t eprog_RunCommand(void);
 uint16_t eprog_getInterfaceVersion(void);
 uint32_t eprog_getSupportedBusTypes(void);
 uint32_t eprog_getBufferSize(void);

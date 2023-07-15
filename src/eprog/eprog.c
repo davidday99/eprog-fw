@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "string.h"
 #include "eprog.h"
 
 int programmer_EnableIOPins(void);
@@ -12,6 +13,10 @@ int programmer_DisableChip(void);
 
 static const uint16_t Version = 0x01;
 static const uint8_t SupportedBusTypes = BUS_TYPE_PARALLEL | BUS_TYPE_SPI;  // Put into a conf file.
+static char *RxBuf;
+static char *TxBuf;
+static size_t RxBufSize;
+static size_t TxBufSize;
 
 static enum AddressBusWidth CurrentAddressBusWidth = ADDRESS_BUS_WIDTH_8;
 static enum SpiFrequency CurrentSpiFrequency = SPI_FREQ_1MHZ;
@@ -25,6 +30,38 @@ static uint32_t ChipEnablePulseWidthTime;
 *             General Commands             *
 ********************************************
 *******************************************/
+
+
+int eprog_Init(char *rxbuf, size_t rxsize, char *txbuf, size_t txsize) {
+    if (!rxbuf || ! txbuf) {
+        return 0;
+    } {
+        RxBuf = rxbuf;
+        RxBufSize = rxsize;
+        TxBuf = txbuf;
+        RxBufSize = rxsize;
+        TxBufSize = txsize;
+        return 1;
+    }
+}
+
+size_t eprog_RunCommand(void) {
+    enum eprog_Command cmd;
+    size_t response_len = 0;
+
+    memcpy(&cmd, RxBuf, sizeof(cmd));
+    
+    switch(cmd) {
+        case EPROG_CMD_GET_INTERFACE_VERSION:
+            TxBuf[0] = eprog_ACK;
+            memcpy(&TxBuf[sizeof(eprog_ACK)], &Version, sizeof(Version));
+            break;
+        default:
+            TxBuf[0] = eprog_ACK;
+            break;
+    }
+    return response_len;
+}
 
 uint16_t eprog_getInterfaceVersion(void) {
     return Version;
