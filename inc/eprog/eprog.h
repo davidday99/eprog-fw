@@ -59,7 +59,7 @@ const uint8_t eprog_NAK = 0x06;
 /* Control Commands
 
 /* General Commands */
-int eprog_Init(char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
+int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
 size_t eprog_RunCommand(void);
 uint16_t eprog_getInterfaceVersion(void);
 uint32_t eprog_getSupportedBusTypes(void);

@@ -5,7 +5,7 @@
 
 static const uint16_t Version = 0x01;
 static const uint8_t SupportedBusTypes = BUS_MODE_PARALLEL | BUS_MODE_SPI;  // Put into a conf file.
-static char *RxBuf;
+static const char *RxBuf;
 static char *TxBuf;
 static size_t RxBufSize;
 static size_t TxBufSize;
@@ -28,7 +28,7 @@ static inline int switchToSpiBusMode(void);
 *******************************************/
 
 
-int eprog_Init(char *rxbuf, size_t rxsize, char *txbuf, size_t txsize) {
+int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize) {
     if (!rxbuf || ! txbuf) {
         return 0;
     } {
