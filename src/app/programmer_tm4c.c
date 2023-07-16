@@ -133,14 +133,14 @@ int programmer_InitSpi(void) {
     return 1;
 }
 
-static int programmer_EnableIOPins(void) {
+int programmer_EnableIOPins(void) {
     for (int i = 0; i < DATA_WIDTH; i++) {
         GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
     }
     return 1;
 }
 
-static int programmer_DisableIOPins(void) {
+int programmer_DisableIOPins(void) {
     for (int i = 0; i < DATA_WIDTH; i++) {
         GPIOPinTypeGPIOOutput(Prog->IO[i].port, Prog->IO[i].pin);
     }
@@ -186,13 +186,37 @@ int programmer_DisableChip(void) {
     GPIOPinWrite(Prog->WEn.port, Prog->WEn.pin, Prog->WEn.pin); 
 }
 
-int programmer_Delay100ns(uint32_t delay);
-int programmer_EnableChip(void);
-int programmer_DisableChip(void);
-int programmer_SetSpiClockFreq(enum SpiFrequency freq);
-enum SpiFrequency programmer_GetSpiClockFreq(void);
-int programmer_SetSpiMode(enum SpiMode mode);
-enum SpiMode programmer_GetSpiMode(void);
-int programmer_SpiWrite(const char *buf, size_t count);
-int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count);
+int programmer_Delay100ns(uint32_t delay) {
+    delay *= 8;
+    SysCtlDelay(delay);
+    return 1;
+}
+
+int programmer_EnableChip(void) {
+    return 1;
+}
+
+int programmer_SetSpiClockFreq(uint32_t freq) {
+    return 1;
+}
+
+uint32_t programmer_GetSpiClockFreq(void) {
+    return 1;
+}
+
+int programmer_SetSpiMode(uint8_t mode) {
+    return 1;
+}
+
+uint8_t programmer_GetSpiMode(void) {
+    return 1;
+}
+
+int programmer_SpiWrite(const char *buf, size_t count) {
+    return 1;
+}
+
+int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
+    return 1;
+}
 
