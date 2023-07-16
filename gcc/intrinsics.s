@@ -48,7 +48,7 @@ memcpy_bytes:
     LDRB R3, [R1], #1
     STRB R3, [R0], #1
     SUBS R2, #1
-    BEQ memcpy_bytes
+    B memcpy_bytes
 memcpy_done: 
     BX LR
 
