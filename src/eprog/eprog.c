@@ -3,6 +3,8 @@
 #include "eprog.h"
 #include "programmer.h"
 
+const uint8_t eprog_ACK = 0x05;
+const uint8_t eprog_NAK = 0x06;
 static const uint16_t Version = 0x01;
 static const uint8_t SupportedBusTypes = BUS_MODE_PARALLEL | BUS_MODE_SPI;  // Put into a conf file.
 static const char *RxBuf;

@@ -54,8 +54,8 @@ enum eprog_Command {
     EPROG_CMD_SPI_WRITE,
 };
 
-const uint8_t eprog_ACK = 0x05;
-const uint8_t eprog_NAK = 0x06;
+extern const uint8_t eprog_ACK;
+extern const uint8_t eprog_NAK;
 
 /* General Commands */
 int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
