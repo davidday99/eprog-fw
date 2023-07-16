@@ -52,6 +52,9 @@ size_t eprog_RunCommand(void) {
     response_len++;
     
     switch(cmd) {
+        case EPROG_CMD_NOP:
+            break; 
+
         case EPROG_CMD_GET_INTERFACE_VERSION:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &Version, sizeof(Version));
             response_len += sizeof(Version);

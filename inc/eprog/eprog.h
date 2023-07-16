@@ -33,6 +33,7 @@ enum SpiMode {
 };
 
 enum eprog_Command {
+    EPROG_CMD_NOP,
     EPROG_CMD_GET_INTERFACE_VERSION,
     EPROG_CMD_GET_BUFFER_SIZE,
     EPROG_CMD_ENABLE_IO_PINS,
@@ -55,8 +56,6 @@ enum eprog_Command {
 
 const uint8_t eprog_ACK = 0x05;
 const uint8_t eprog_NAK = 0x06;
-
-/* Control Commands
 
 /* General Commands */
 int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
