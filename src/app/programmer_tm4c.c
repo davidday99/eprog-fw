@@ -135,16 +135,19 @@ int programmer_InitSpi(void) {
     return 1;
 }
 
-int programmer_EnableIOPinsForRead(void) {
-    for (int i = 0; i < DATA_WIDTH; i++) {
-        GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
-    }
-    return 1;
+int programmer_DisableIO(void) {
+    return 0;
 }
 
-int programmer_EnableIOPinsForWrite(void) {
-    for (int i = 0; i < DATA_WIDTH; i++) {
-        GPIOPinTypeGPIOOutput(Prog->IO[i].port, Prog->IO[i].pin);
+int programmer_ToggleIOMode(uint8_t mode) {
+    if (mode == 0) {
+        for (int i = 0; i < DATA_WIDTH; i++) {
+            GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
+        }
+    } else {
+        for (int i = 0; i < DATA_WIDTH; i++) {
+            GPIOPinTypeGPIOOutput(Prog->IO[i].port, Prog->IO[i].pin);
+        }
     }
     return 1;
 }
@@ -184,23 +187,6 @@ uint8_t programmer_GetData(void) {
         data |= (GPIOPinRead(Prog->IO[i].port, Prog->IO[i].pin) ? 1 : 0) << i;
     }
     return data;
-}
-
-int programmer_EnableChipForRead(void) {
-    GPIOPinWrite(Prog->OEn.port, Prog->OEn.pin, 0); 
-    GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, 0); 
-}
-
-int programmer_EnableChipForWrite(void) {
-    GPIOPinWrite(Prog->WEn.port, Prog->WEn.pin, 0); 
-    GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, 0); 
-}
-
-
-int programmer_DisableChip(void) {
-    GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, Prog->CEn.pin); 
-    GPIOPinWrite(Prog->OEn.port, Prog->OEn.pin, Prog->OEn.pin); 
-    GPIOPinWrite(Prog->WEn.port, Prog->WEn.pin, Prog->WEn.pin); 
 }
 
 int programmer_Delay100ns(uint32_t delay) {

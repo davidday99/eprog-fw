@@ -8,6 +8,7 @@ int programmer_Init(void);
 int programmer_InitParallel(void);
 int programmer_InitSpi(void);
 int programmer_DisableIOPins(void);
+int programmer_ToggleDataIOMode(uint8_t mode);
 int programmer_SetAddress(uint8_t busWidth, uint32_t address);
 int programmer_SetData(uint32_t data);
 int programmer_ToggleCE(uint8_t state);
