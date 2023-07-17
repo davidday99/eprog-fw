@@ -7,10 +7,12 @@
 int programmer_Init(void);
 int programmer_InitParallel(void);
 int programmer_InitSpi(void);
-int programmer_EnableIOPins(void);
 int programmer_DisableIOPins(void);
 int programmer_SetAddress(uint8_t busWidth, uint32_t address);
 int programmer_SetData(uint32_t data);
+int programmer_ToggleCE(uint8_t state);
+int programmer_ToggleOE(uint8_t state);
+int programmer_ToggleWE(uint8_t state);
 uint32_t programmer_GetData(void);
 int programmer_Delay100ns(uint32_t delay);
 int programmer_EnableChip(void);

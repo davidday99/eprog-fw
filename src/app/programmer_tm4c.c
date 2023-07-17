@@ -135,14 +135,14 @@ int programmer_InitSpi(void) {
     return 1;
 }
 
-int programmer_EnableIOPins(void) {
+int programmer_EnableIOPinsForRead(void) {
     for (int i = 0; i < DATA_WIDTH; i++) {
         GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
     }
     return 1;
 }
 
-int programmer_DisableIOPins(void) {
+int programmer_EnableIOPinsForWrite(void) {
     for (int i = 0; i < DATA_WIDTH; i++) {
         GPIOPinTypeGPIOOutput(Prog->IO[i].port, Prog->IO[i].pin);
     }
@@ -161,6 +161,21 @@ int programmer_SetData(uint8_t value) {
         GPIOPinWrite(Prog->IO[i].port, Prog->IO[i].pin, (value & 1) ? Prog->IO[i].pin : 0);
         value >>= 1;
     }
+}
+
+int programmer_ToggleCE(uint8_t state) {
+    GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, state == 0 ? 0 : Prog->CEn.pin); 
+    return 1;
+}
+
+int programmer_ToggleOE(uint8_t state) {
+    GPIOPinWrite(Prog->OEn.port, Prog->OEn.pin, state == 0 ? 0 : Prog->OEn.pin); 
+    return 1;
+}
+
+int programmer_ToggleWE(uint8_t state) {
+    GPIOPinWrite(Prog->WEn.port, Prog->WEn.pin, state == 0 ? 0 : Prog->WEn.pin); 
+    return 1;
 }
 
 uint8_t programmer_GetData(void) {
