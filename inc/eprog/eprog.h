@@ -73,7 +73,7 @@ uint8_t eprog_ToggleIo(enum IoState);
 enum AddressBusWidth eprog_getAddressBusWidth(void);
 uint8_t eprog_setAddressBusWidth(enum AddressBusWidth);
 uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count);
-uint8_t eprog_parallelWrite(unsigned long address, char *buf, size_t count);
+uint8_t eprog_parallelWrite(unsigned long address, const char *buf, size_t count);
 
 /* SPI Commands */
 enum SpiFrequency eprog_getSpifrequency(void);

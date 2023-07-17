@@ -125,7 +125,7 @@ size_t eprog_RunCommand(void) {
                 break;
             }
             
-            if (!eprog_parallelWrite(arg1_32b, &TxBuf[sizeof(uint8_t)], arg2_32b)) {
+            if (!eprog_parallelWrite(arg1_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b) + sizeof(arg2_32b)], arg2_32b)) {
                 TxBuf[0] = eprog_NAK;
             } else {
                 response_len += arg2_32b;
@@ -268,16 +268,22 @@ uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count) {
     return 1;
 }
 
-uint8_t eprog_parallelWrite(unsigned long address, char *buf, size_t count) {
+uint8_t eprog_parallelWrite(unsigned long address, const char *buf, size_t count) {
     // Add parameter validation
     // Set programmer to Parallel Input Mode
+    programmer_ToggleDataIOMode(1);
+    programmer_ToggleOE(1);
+    programmer_ToggleWE(0);
     for (size_t i = 0; i < count; i++) {
         programmer_SetAddress(CurrentAddressBusWidth, address + i);
         programmer_SetData(buf[i]);
         programmer_Delay100ns(ParallelAddressHoldTime);
-        programmer_EnableChip();
+        programmer_ToggleCE(0);
         programmer_Delay100ns(ChipEnablePulseWidthTime);
+        programmer_ToggleCE(1);
     }
+    programmer_ToggleWE(1);
+    programmer_ToggleDataIOMode(0);
     return 1;
 }
 
