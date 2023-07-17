@@ -6,6 +6,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/ssi.h"
+#include "programmer.h"
 
 #define PART_TM4C123GH6PM
 #include "driverlib/pin_map.h"
@@ -139,7 +140,7 @@ int programmer_DisableIO(void) {
     return 0;
 }
 
-int programmer_ToggleIOMode(uint8_t mode) {
+int programmer_ToggleDataIOMode(uint8_t mode) {
     if (mode == 0) {
         for (int i = 0; i < DATA_WIDTH; i++) {
             GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
@@ -152,7 +153,7 @@ int programmer_ToggleIOMode(uint8_t mode) {
     return 1;
 }
 
-int programmer_SetAddress(uint32_t address) {
+int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
     for (int i = 0; i < ADDRESS_WIDTH; i++) {
         GPIOPinWrite(Prog->A[i].port, Prog->A[i].pin, address & 1 ? Prog->A[i].pin : 0);
         address >>= 1;
