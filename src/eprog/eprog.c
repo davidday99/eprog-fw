@@ -39,6 +39,7 @@ int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize) {
         TxBuf = txbuf;
         RxBufSize = rxsize;
         TxBufSize = txsize;
+        programmer_Init();
         return 1;
     }
 }
@@ -273,7 +274,6 @@ uint8_t eprog_setSpifrequency(enum SpiFrequency);
 uint8_t eprog_setSpiMode(enum SpiMode);
 uint8_t spi_read(char *buf, size_t count);
 uint8_t spi_write(const char *buf, size_t count);
-
 
 static inline int switchToParallelBusMode(void) {
     if ((CurrentBusMode != BUS_MODE_PARALLEL) && (BUS_MODE_PARALLEL & SupportedBusTypes)) {

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+int programmer_Init(void);
 int programmer_InitParallel(void);
 int programmer_InitSpi(void);
 int programmer_EnableIOPins(void);

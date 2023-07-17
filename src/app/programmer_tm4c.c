@@ -85,13 +85,15 @@ static Programmer _Prog = {
 
 static Programmer *Prog = &_Prog;
 
-int programmer_InitParallel(void) {
+int programmer_Init(void) {
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
         SysCtlPeripheralEnable(*port);
         while (!SysCtlPeripheralReady(*port))
             ;
     }
+}
 
+int programmer_InitParallel(void) {
     GPIOPinTypeGPIOOutput(Prog->WEn.port, Prog->WEn.pin);
     GPIOPinTypeGPIOOutput(Prog->CEn.port, Prog->CEn.pin);
     GPIOPinTypeGPIOOutput(Prog->OEn.port, Prog->OEn.pin);
