@@ -68,12 +68,9 @@ size_t eprog_RunCommand(void) {
             response_len += sizeof(RxBufSize);
             break;
 
-        case EPROG_CMD_ENABLE_IO_PINS:
-            programmer_EnableIOPins();
-            break;
-
-        case EPROG_CMD_DISABLE_IO_PINS:
-            programmer_DisableIOPins();
+        case EPROG_CMD_TOGGLE_IO:
+            memcpy(&arg1_32b, &RxBuf[sizeof(uint8_t)], sizeof(uint8_t));
+            eprog_ToggleIo(arg1_32b);
             break;
 
         case EPROG_CMD_SET_ADDRESS_BUS_WIDTH:
@@ -212,14 +209,32 @@ uint32_t eprog_getSupportedBusTypes(void) {
     return SupportedBusTypes;
 }
 
-uint32_t eprog_getBufferSize(void);
+uint32_t eprog_getBufferSize(void) {
+    return RxBufSize;
+}
+
+uint8_t eprog_ToggleIo(enum IoState state) {
+    switch (state) {
+        case IO_STATE_DISABLED:
+            // disable IO lines
+            break;
+
+        case IO_STATE_ENABLED:
+            programmer_Init(); 
+            break;
+
+        default:
+            return 0;
+    }
+    return 1;
+}
 
 uint8_t eprog_EnableIOPins(void) { 
-    return programmer_EnableIOPins();
+    // return programmer_EnableIOPins();
 }
 
 uint8_t eprog_DisableIOPins(void) { 
-    return programmer_DisableIOPins();
+    // return programmer_DisableIOPins();
 }
 
 /*******************************************
@@ -240,7 +255,8 @@ uint8_t eprog_setAddressBusWidth(enum AddressBusWidth busWidth) {
 uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count) {
     // Validate parameters 
     // Set programmer to Parallel Output Mode
-    programmer_EnableChip();
+    programmer_EnableIOPinsForRead();
+    programmer_EnableChipForRead();
     for (size_t i = 0; i < count; i++) {
         programmer_SetAddress(CurrentAddressBusWidth, address + i);
         programmer_Delay100ns(ParallelAddressHoldTime);

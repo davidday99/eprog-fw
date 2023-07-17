@@ -41,8 +41,7 @@ enum eprog_Command {
     EPROG_CMD_NOP,
     EPROG_CMD_GET_INTERFACE_VERSION,
     EPROG_CMD_GET_BUFFER_SIZE,
-    EPROG_CMD_ENABLE_IO_PINS,
-    EPROG_CMD_DISABLE_IO_PINS,
+    EPROG_CMD_TOGGLE_IO,
     EPROG_CMD_SET_ADDRESS_BUS_WIDTH,
     EPROG_CMD_GET_ADDRESS_BUS_WIDTH,
     EPROG_CMD_SET_ADDRESS_HOLD_TIME,
@@ -68,8 +67,7 @@ size_t eprog_RunCommand(void);
 uint16_t eprog_getInterfaceVersion(void);
 uint32_t eprog_getSupportedBusTypes(void);
 uint32_t eprog_getBufferSize(void);
-uint8_t enable_io_pins(void);
-uint8_t disable_io_pins(void);
+uint8_t eprog_ToggleIo(enum IoState);
 
 /* Parallel Commands */
 enum AddressBusWidth eprog_getAddressBusWidth(void);
