@@ -18,24 +18,19 @@ Command List:
     Parallel:
         Command     Description               Parameters                                  Return value
         
-        0x05        set_address_bus_width     <8-bit BUS_WIDTH>                           <ACK> / <NAK>
-        0x06        get_address_bus_width     none                                        <ACK> <8-bit BUS_WIDTH>
-        0x07        set_address_hold_time     <32-bit nsecs>                              <ACK> / <NAK>
-        0x08        get_address_hold_time     none                                        <ACK> <32-bit nsec>
-        0x09        set_pulse_width_time      <32-bit nsecs>                              <ACK> / <NAK>
-        0x0A        get_pulse_width_time      none                                        <ACK> <32-bit nsecs>
-        0x0B        parallel_read             <32-bit address> <32-bit nlen>             <ACK> <nbytes> / <NAK>
-        0x0C        parallel_write            <32-bit address> <32-bit nlen> <nbytes>     <ACK>
+        0x05        set_address_bus_width     <8-bit BUS_WIDTH>                           <ACK> <8-bit BUS_WIDTH> / <NAK>
+        0x06        set_address_hold_time     <32-bit nsecs>                              <ACK> <32-bit nsec> / <NAK>
+        0x07        set_pulse_width_time      <32-bit nsecs>                              <ACK> <32-bit nsecs> / <NAK>
+        0x08        parallel_read             <32-bit address> <32-bit nlen>             <ACK> <nbytes> / <NAK>
+        0x09        parallel_write            <32-bit address> <32-bit nlen> <nbytes>     <ACK>
 
     SPI:
         Command     Description               Parameters                                  Return value
 
-        0x0D        set_spi_clock_freq        <32-bit SPI_CLOCK_FREQ>                     <ACK> / <NAK>
-        0x0E        get_spi_clock_freq        none                                        <ACK> <32-bit SPI_CLOCK_FREQ>
-        0x0F        set_spi_mode              <8-bit SPI_MODE>                            <ACK> / <NAK>
-        0x10        get_spi_mode              none                                        <ACK> <8-bit SPI_MODE>
-        0x11        spi_write                 <32-bit nlen> <nbytes>                      <ACK> / <NAK>
-        0x12        spi_read                  <32-bit nop> <nlen>                         <ACK> <nbytes> / <NAK>
+        0x0A        set_spi_clock_freq        <32-bit SPI_CLOCK_FREQ>                     <ACK> <32-bit SPI_CLOCK_FREQ> / <NAK>
+        0x0B        set_spi_mode              <8-bit SPI_MODE>                            <ACK> <8-bit SPI_MODE> / <NAK>
+        0x0C        spi_read                  <32-bit nop> <nlen>                         <ACK> <nbytes> / <NAK>
+        0x0D        spi_write                 <32-bit nlen> <nbytes>                      <ACK> / <NAK>
 
     I2C:
         N/A 
