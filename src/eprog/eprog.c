@@ -255,14 +255,16 @@ uint8_t eprog_setAddressBusWidth(enum AddressBusWidth busWidth) {
 uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count) {
     // Validate parameters 
     // Set programmer to Parallel Output Mode
-    programmer_EnableIOPinsForRead();
-    programmer_EnableChipForRead();
+    programmer_ToggleDataIOMode(0);
+    programmer_ToggleOE(0);
+    programmer_ToggleCE(0);
     for (size_t i = 0; i < count; i++) {
         programmer_SetAddress(CurrentAddressBusWidth, address + i);
         programmer_Delay100ns(ParallelAddressHoldTime);
         buf[i] = programmer_GetData();
     } 
-    programmer_DisableChip();
+    programmer_ToggleCE(1);
+    programmer_ToggleOE(1);
     return 1;
 }
 
