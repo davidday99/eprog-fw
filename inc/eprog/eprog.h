@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
+enum IoState {
+    IO_STATE_DISABLED,
+    IO_STATE_ENABLED,
+};
+
 enum BusMode {
     BUS_MODE_NOT_SET = 0,
     BUS_MODE_PARALLEL = 1,
