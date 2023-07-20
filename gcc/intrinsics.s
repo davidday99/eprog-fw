@@ -52,3 +52,30 @@ memcpy_bytes:
 memcpy_done: 
     BX LR
 
+# *********** memcmp ************
+# Compare n bytes to between s1 and s2
+.global memcmp
+.type mempcmp,%function
+memcmp:
+    EOR R3, R3, R3
+    CMP R2, #4
+    BLT memcmp_bytes
+    LDR R3, [R0], #4
+    LDR R4, [R1], #4
+    SUBS R3, R3, R4
+    BNE memcmp_done 
+    SUBS R2, #4
+    BGE memcmp
+memcmp_bytes:
+    CMP R2, #0
+    BEQ memcmp_done
+    LDRB R3, [R0], #1
+    LDRB R4, [R1], #1
+    SUBS R3, R3, R4
+    BNE memcmp_done
+    SUBS R2, #1
+    BGE memcmp_bytes 
+memcmp_done:
+    MOV R0, R3
+    BX LR
+
