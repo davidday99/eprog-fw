@@ -63,9 +63,14 @@ size_t eprog_RunCommand(void) {
             response_len += sizeof(Version);
             break;
 
-        case EPROG_CMD_GET_BUFFER_SIZE:
+        case EPROG_CMD_GET_MAX_RX_SIZE:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &RxBufSize, sizeof(RxBufSize));
             response_len += sizeof(RxBufSize);
+            break;
+
+        case EPROG_CMD_GET_MAX_TX_SIZE:
+            memcpy(&TxBuf[sizeof(eprog_ACK)], &TxBufSize, sizeof(TxBufSize));
+            response_len += sizeof(TxBufSize);
             break;
 
         case EPROG_CMD_TOGGLE_IO:
