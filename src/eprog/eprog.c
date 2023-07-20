@@ -70,7 +70,9 @@ size_t eprog_RunCommand(void) {
 
         case EPROG_CMD_TOGGLE_IO:
             memcpy(&arg1_32b, &RxBuf[sizeof(uint8_t)], sizeof(uint8_t));
-            eprog_ToggleIo(arg1_32b);
+            if (!eprog_ToggleIo(arg1_32b)) {
+                TxBuf[0] = eprog_NAK; 
+            }
             break;
 
         case EPROG_CMD_SET_ADDRESS_BUS_WIDTH:
@@ -216,7 +218,8 @@ uint32_t eprog_getBufferSize(void) {
 uint8_t eprog_ToggleIo(enum IoState state) {
     switch (state) {
         case IO_STATE_DISABLED:
-            // disable IO lines
+            programmer_DisableIOPins();
+            CurrentBusMode = BUS_MODE_NOT_SET;
             break;
 
         case IO_STATE_ENABLED:
