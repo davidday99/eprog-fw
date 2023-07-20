@@ -222,14 +222,6 @@ uint8_t eprog_ToggleIo(enum IoState state) {
     return 1;
 }
 
-uint8_t eprog_EnableIOPins(void) { 
-    // return programmer_EnableIOPins();
-}
-
-uint8_t eprog_DisableIOPins(void) { 
-    // return programmer_DisableIOPins();
-}
-
 /*******************************************
 ********************************************
 *             Parallel Commands            *
