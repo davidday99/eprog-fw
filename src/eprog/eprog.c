@@ -82,27 +82,18 @@ size_t eprog_RunCommand(void) {
 
         case EPROG_CMD_SET_ADDRESS_BUS_WIDTH:
             memcpy(&CurrentAddressBusWidth, &RxBuf[sizeof(uint8_t)], sizeof(CurrentAddressBusWidth));
-            break;
-
-        case EPROG_CMD_GET_ADDRESS_BUS_WIDTH:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentAddressBusWidth, sizeof(CurrentAddressBusWidth));
             response_len += sizeof(CurrentAddressBusWidth);
             break;
 
         case EPROG_CMD_SET_ADDRESS_HOLD_TIME:
             memcpy(&ParallelAddressHoldTime, &RxBuf[sizeof(uint8_t)], sizeof(ParallelAddressHoldTime));
-            break;
-
-        case EPROG_CMD_GET_ADDRESS_HOLD_TIME:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &ParallelAddressHoldTime, sizeof(ParallelAddressHoldTime));
             response_len += sizeof(ParallelAddressHoldTime);
             break;
-            
+
         case EPROG_CMD_SET_PULSE_WIDTH_TIME:
             memcpy(&ChipEnablePulseWidthTime, &RxBuf[sizeof(uint8_t)], sizeof(ChipEnablePulseWidthTime));
-            break;
-
-        case EPROG_CMD_GET_PULSE_WIDTH_TIME:
             memcpy(&TxBuf[sizeof(eprog_ACK)], &ChipEnablePulseWidthTime, sizeof(ChipEnablePulseWidthTime));
             response_len += sizeof(ChipEnablePulseWidthTime);
             break;
@@ -144,15 +135,12 @@ size_t eprog_RunCommand(void) {
             if (arg1_32b != CurrentSpiFrequency) {
                 if (programmer_SetSpiClockFreq(arg1_32b)) {
                     CurrentSpiFrequency = arg1_32b;
+                    memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiFrequency, sizeof(CurrentSpiFrequency));
+                    response_len += sizeof(CurrentSpiFrequency);
                 } else {
                     TxBuf[0] = eprog_NAK;
                 }
             }
-            break;
-
-        case EPROG_CMD_GET_SPI_CLOCK_FREQ:
-            memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiFrequency, sizeof(CurrentSpiFrequency));
-            response_len += sizeof(CurrentSpiFrequency);
             break;
 
         case EPROG_CMD_SET_SPI_MODE:
@@ -160,15 +148,12 @@ size_t eprog_RunCommand(void) {
             if (arg1_32b != CurrentSpiMode) {
                 if (programmer_SetSpiMode(arg1_32b)) {
                     CurrentSpiMode = arg1_32b;
+                    memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiMode, sizeof(CurrentSpiMode));
+                    response_len += sizeof(CurrentSpiMode);
                 } else {
                     TxBuf[0] = eprog_NAK;
                 }
             }
-            break;
-
-        case EPROG_CMD_GET_SPI_MODE:
-            memcpy(&TxBuf[sizeof(eprog_ACK)], &CurrentSpiMode, sizeof(CurrentSpiMode));
-            response_len += sizeof(CurrentSpiMode);
             break;
 
         case EPROG_CMD_SPI_READ:
