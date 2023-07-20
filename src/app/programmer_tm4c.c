@@ -92,6 +92,7 @@ int programmer_Init(void) {
         while (!SysCtlPeripheralReady(*port))
             ;
     }
+    return 1;
 }
 
 int programmer_InitParallel(void) {
@@ -158,10 +159,11 @@ int programmer_ToggleDataIOMode(uint8_t mode) {
 }
 
 int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
-    for (int i = 0; i < MAX_ADDRESS_WIDTH; i++) {
+    for (int i = 0; i < busWidth; i++) {
         GPIOPinWrite(Prog->A[i].port, Prog->A[i].pin, address & 1 ? Prog->A[i].pin : 0);
         address >>= 1;
     }
+    return 1;
 }
 
 int programmer_SetData(uint8_t value) {
@@ -169,6 +171,7 @@ int programmer_SetData(uint8_t value) {
         GPIOPinWrite(Prog->IO[i].port, Prog->IO[i].pin, (value & 1) ? Prog->IO[i].pin : 0);
         value >>= 1;
     }
+    return 1;
 }
 
 int programmer_ToggleCE(uint8_t state) {

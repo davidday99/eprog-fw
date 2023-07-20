@@ -39,8 +39,7 @@ int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize) {
         TxBuf = txbuf;
         RxBufSize = rxsize;
         TxBufSize = txsize;
-        programmer_Init();
-        return 1;
+        return programmer_Init();
     }
 }
 
