@@ -77,15 +77,20 @@ static int testCommands(void) {
     result &= response_len == 5;
     result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
 
-    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_WRITE, 0xC, 0, 0, 0, 'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'}, 17);
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_WRITE, 0x01, 0, 0, 0, 0x06}, 6);
     response_len = eprog_RunCommand();
     result &= response_len == 1;
     result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;
 
-    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_READ, 4, 0, 0, 0, 0xA5, 0xA5, 0xA5, 0xA5}, 9);
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_WRITE, 0x7, 0, 0, 0, 0x02, 0, 0, 0xab, 0xcd, 0xef, 0x12}, 12);
     response_len = eprog_RunCommand();
-    result &= response_len == 5;
-    result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0xA5, 0xA5, 0xA5, 0xA5}, response_len) == 0;
+    result &= response_len == 1;
+    result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;
+
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_READ, 7, 0, 0, 0, 0x03, 0, 0, 0, 0, 0, 0}, 12);
+    response_len = eprog_RunCommand();
+    result &= response_len == 8;
+    result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0, 0, 0, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
 
     return result;
 }
