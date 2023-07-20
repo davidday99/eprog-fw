@@ -22,6 +22,7 @@ static uint32_t ChipEnablePulseWidthTime;
 
 static inline int switchToParallelBusMode(void);
 static inline int switchToSpiBusMode(void);
+static int getAddressLineCount(enum AddressBusWidth busWidth);
 
 /*******************************************
 ********************************************
@@ -124,8 +125,6 @@ size_t eprog_RunCommand(void) {
             
             if (!eprog_parallelWrite(arg1_32b, &RxBuf[sizeof(eprog_ACK) + sizeof(arg1_32b) + sizeof(arg2_32b)], arg2_32b)) {
                 TxBuf[0] = eprog_NAK;
-            } else {
-                response_len += arg2_32b;
             }
             break;
 
@@ -243,7 +242,7 @@ uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count) {
     programmer_ToggleOE(0);
     programmer_ToggleCE(0);
     for (size_t i = 0; i < count; i++) {
-        programmer_SetAddress(CurrentAddressBusWidth, address + i);
+        programmer_SetAddress(getAddressLineCount(CurrentAddressBusWidth), address + i);
         programmer_Delay100ns(ParallelAddressHoldTime);
         buf[i] = programmer_GetData();
     } 
@@ -259,7 +258,7 @@ uint8_t eprog_parallelWrite(unsigned long address, const char *buf, size_t count
     programmer_ToggleOE(1);
     programmer_ToggleWE(0);
     for (size_t i = 0; i < count; i++) {
-        programmer_SetAddress(CurrentAddressBusWidth, address + i);
+        programmer_SetAddress(getAddressLineCount(CurrentAddressBusWidth), address + i);
         programmer_SetData(buf[i]);
         programmer_Delay100ns(ParallelAddressHoldTime);
         programmer_ToggleCE(0);
@@ -301,3 +300,28 @@ static inline int switchToSpiBusMode(void) {
     }
 }
 
+static int getAddressLineCount(enum AddressBusWidth busWidth) {
+    int lineCount = 0;
+    switch (busWidth) {
+        case ADDRESS_BUS_WIDTH_8:
+            lineCount = 8; 
+            break;
+
+        case ADDRESS_BUS_WIDTH_14:
+            lineCount = 14; 
+            break;
+
+        case ADDRESS_BUS_WIDTH_15:
+            lineCount = 15; 
+            break;
+
+        case ADDRESS_BUS_WIDTH_16:
+            lineCount = 16; 
+            break;
+
+        default:
+            lineCount = 0;
+            break;
+    }
+    return lineCount;
+}
