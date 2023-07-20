@@ -11,8 +11,8 @@
 #define PART_TM4C123GH6PM
 #include "driverlib/pin_map.h"
 
-#define DATA_WIDTH 8
-#define ADDRESS_WIDTH 15
+#define MAX_DATA_WIDTH 8
+#define MAX_ADDRESS_WIDTH 15
 
 typedef struct _GpioPin {
     uint32_t port;
@@ -28,8 +28,8 @@ typedef struct _SpiModule {
 
 typedef struct _Programmer {
     uint32_t ports[10];
-    GpioPin_t A[ADDRESS_WIDTH];
-    GpioPin_t IO[DATA_WIDTH];
+    GpioPin_t A[MAX_ADDRESS_WIDTH];
+    GpioPin_t IO[MAX_DATA_WIDTH];
     GpioPin_t WEn;
     GpioPin_t OEn;
     GpioPin_t CEn;
@@ -103,7 +103,7 @@ int programmer_InitParallel(void) {
     GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, Prog->CEn.pin);
     GPIOPinWrite(Prog->OEn.port, Prog->OEn.pin, Prog->OEn.pin);
 
-    for (int i = 0; i < ADDRESS_WIDTH; i++ ) {
+    for (int i = 0; i < MAX_ADDRESS_WIDTH; i++ ) {
         GPIOPinTypeGPIOOutput(Prog->A[i].port, Prog->A[i].pin);
     }    
 
@@ -142,11 +142,11 @@ int programmer_DisableIO(void) {
 
 int programmer_ToggleDataIOMode(uint8_t mode) {
     if (mode == 0) {
-        for (int i = 0; i < DATA_WIDTH; i++) {
+        for (int i = 0; i < MAX_DATA_WIDTH; i++) {
             GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
         }
     } else {
-        for (int i = 0; i < DATA_WIDTH; i++) {
+        for (int i = 0; i < MAX_DATA_WIDTH; i++) {
             GPIOPinTypeGPIOOutput(Prog->IO[i].port, Prog->IO[i].pin);
         }
     }
@@ -154,14 +154,14 @@ int programmer_ToggleDataIOMode(uint8_t mode) {
 }
 
 int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
-    for (int i = 0; i < ADDRESS_WIDTH; i++) {
+    for (int i = 0; i < MAX_ADDRESS_WIDTH; i++) {
         GPIOPinWrite(Prog->A[i].port, Prog->A[i].pin, address & 1 ? Prog->A[i].pin : 0);
         address >>= 1;
     }
 }
 
 int programmer_SetData(uint8_t value) {
-    for (int i = 0; i < DATA_WIDTH; i++) {
+    for (int i = 0; i < MAX_DATA_WIDTH; i++) {
         GPIOPinWrite(Prog->IO[i].port, Prog->IO[i].pin, (value & 1) ? Prog->IO[i].pin : 0);
         value >>= 1;
     }
@@ -184,7 +184,7 @@ int programmer_ToggleWE(uint8_t state) {
 
 uint8_t programmer_GetData(void) {
     uint8_t data = 0;
-    for (int i = 0; i < DATA_WIDTH; i++) {
+    for (int i = 0; i < MAX_DATA_WIDTH; i++) {
         data |= (GPIOPinRead(Prog->IO[i].port, Prog->IO[i].pin) ? 1 : 0) << i;
     }
     return data;
