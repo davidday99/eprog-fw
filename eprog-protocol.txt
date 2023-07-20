@@ -29,7 +29,7 @@ Command List:
 
         0x0B        set_spi_clock_freq        <32-bit SPI_CLOCK_FREQ>                     <ACK> <32-bit SPI_CLOCK_FREQ> / <NAK>
         0x0C        set_spi_mode              <8-bit SPI_MODE>                            <ACK> <8-bit SPI_MODE> / <NAK>
-        0x0D        spi_read                  <32-bit nop> <nlen>                         <ACK> <nbytes> / <NAK>
+        0x0D        spi_read                  <32-bit nlen> <nbytes>                      <ACK> <nbytes> / <NAK>
         0x0E        spi_write                 <32-bit nlen> <nbytes>                      <ACK> / <NAK>
 
     I2C:
