@@ -1,12 +1,13 @@
 #include <stdint.h>
+#include "eprog_conf.h"
 #include "string.h"
 #include "eprog.h"
 #include "programmer.h"
 
 const uint8_t eprog_ACK = 0x05;
 const uint8_t eprog_NAK = 0x06;
-static const uint16_t Version = 0x01;
-static const uint8_t SupportedBusTypes = BUS_MODE_PARALLEL | BUS_MODE_SPI;  // Put into a conf file.
+static const uint16_t Version = EPROG_VERSION_NUMBER;
+static const uint8_t SupportedBusTypes = EPROG_SUPPORTED_BUS_TYPES;
 static const char *RxBuf;
 static char *TxBuf;
 static size_t RxBufSize;
@@ -323,3 +324,4 @@ static int getAddressLineCount(enum AddressBusWidth busWidth) {
     }
     return lineCount;
 }
+
