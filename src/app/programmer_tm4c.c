@@ -85,6 +85,8 @@ static Programmer _Prog = {
 };
 
 static Programmer *Prog = &_Prog;
+static uint32_t CurrentSpiMode;
+static uint32_t CurrentSpiFreq;
 
 int programmer_Init(void) {
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
@@ -127,8 +129,11 @@ int programmer_InitSpi(void) {
     GPIOPinTypeSSI(GPIO_PORTA_BASE, 
                      GPIO_PIN_5 | GPIO_PIN_4 | GPIO_PIN_3 | GPIO_PIN_2);
 
-    SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0, 
-            SSI_MODE_MASTER, 1000000, 8);
+    CurrentSpiMode = SSI_FRF_MOTO_MODE_0;
+    CurrentSpiFreq = 1000000;
+
+    SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
+            SSI_MODE_MASTER, CurrentSpiFreq, 8);
 
     SSILoopbackEnable(SSI0_BASE);
 
@@ -208,18 +213,20 @@ int programmer_EnableChip(void) {
 }
 
 int programmer_SetSpiClockFreq(uint32_t freq) {
-    return 1;
-}
-
-uint32_t programmer_GetSpiClockFreq(void) {
+    SSIDisable(SSI0_BASE);
+    CurrentSpiFreq = freq;
+    SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
+            SSI_MODE_MASTER, CurrentSpiFreq, 8);
+    SSIEnable(SSI0_BASE);
     return 1;
 }
 
 int programmer_SetSpiMode(uint8_t mode) {
-    return 1;
-}
-
-uint8_t programmer_GetSpiMode(void) {
+    SSIDisable(SSI0_BASE);
+    CurrentSpiMode = mode;
+    SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
+            SSI_MODE_MASTER, CurrentSpiFreq, 8);
+    SSIEnable(SSI0_BASE);
     return 1;
 }
 
@@ -235,6 +242,12 @@ int programmer_SpiWrite(const char *buf, size_t count) {
 }
 
 int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
+    for (size_t i = 0; i < count; i++) {
+        SSIDataPut(SSI0_BASE, txbuf[i]);
+        while (SSIBusy(SSI0_BASE))
+            ;
+        SSIDataGet(SSI0_BASE, &rxbuf[i]);
+    }
     return 1;
 }
 
