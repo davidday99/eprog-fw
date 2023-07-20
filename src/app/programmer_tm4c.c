@@ -136,8 +136,12 @@ int programmer_InitSpi(void) {
     return 1;
 }
 
-int programmer_DisableIO(void) {
-    return 0;
+// TODO: confirm that this disables peripheral
+int programmer_DisableIOPins(void) {
+    for (uint32_t *port = Prog->ports; *port != 0; port++) {
+        SysCtlPeripheralDisable(*port);
+    }
+    return 1;
 }
 
 int programmer_ToggleDataIOMode(uint8_t mode) {
