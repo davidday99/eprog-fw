@@ -179,9 +179,7 @@ size_t eprog_RunCommand(void) {
 
             if (!programmer_SpiWrite(&RxBuf[sizeof(uint8_t) + sizeof(arg1_32b)], arg1_32b)) {
                 TxBuf[0] = eprog_NAK;
-            } else {
-                response_len += arg1_32b;
-            }
+            } 
             break;
 
         default:
