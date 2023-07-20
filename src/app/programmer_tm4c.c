@@ -136,8 +136,6 @@ int programmer_InitSpi(void) {
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
             SSI_MODE_MASTER, CurrentSpiFreq, 8);
 
-    SSILoopbackEnable(SSI0_BASE);
-
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
 
     SSIEnable(SSI0_BASE);
@@ -238,21 +236,22 @@ int programmer_SpiWrite(const char *buf, size_t count) {
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
         SSIDataPut(SSI0_BASE, buf[i]);
-        while (SSIBusy(SSI0_BASE))
-            ;
-        SSIDataGetNonBlocking(SSI0_BASE, &garbage);
     }
+    while (SSIBusy(SSI0_BASE))
+        ;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
+    while (SSIDataGetNonBlocking(SSI0_BASE, &garbage))
+        ;
     return 1;
 }
 
 int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
+    uint32_t readVal;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
         SSIDataPut(SSI0_BASE, txbuf[i]);
-        while (SSIBusy(SSI0_BASE))
-            ;
-        SSIDataGet(SSI0_BASE, &rxbuf[i]);
+        SSIDataGet(SSI0_BASE, &readVal);
+        rxbuf[i] = (char) readVal;
     }
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
     return 1;
