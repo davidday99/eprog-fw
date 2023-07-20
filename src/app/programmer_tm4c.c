@@ -224,6 +224,13 @@ uint8_t programmer_GetSpiMode(void) {
 }
 
 int programmer_SpiWrite(const char *buf, size_t count) {
+    uint32_t garbage;
+    for (size_t i = 0; i < count; i++) {
+        SSIDataPut(SSI0_BASE, buf[i]);
+        while (SSIBusy(SSI0_BASE))
+            ;
+        SSIDataGetNonBlocking(SSI0_BASE, &garbage);
+    }
     return 1;
 }
 
