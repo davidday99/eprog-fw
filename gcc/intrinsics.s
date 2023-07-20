@@ -36,12 +36,13 @@ EndCritical:
 .global memcpy
 .type memcpy,%function
 memcpy:
+    PUSH {R0, R1}
     CMP R2, #4
     BLT memcpy_bytes
     LDR R3, [R1], #4
     STR R3, [R0], #4
     SUBS R2, #4
-    BNE memcpy
+    BGE memcpy
 memcpy_bytes:
     CMP R2, #0
     BEQ memcpy_done
@@ -50,6 +51,7 @@ memcpy_bytes:
     SUBS R2, #1
     B memcpy_bytes
 memcpy_done: 
+    POP {R0, R1}
     BX LR
 
 # *********** memcmp ************
