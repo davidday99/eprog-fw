@@ -12,50 +12,41 @@ Command List:
         0x01        get_interface_version     none                                        <ACK> <16-bit version>
         0x02        get_max_rx_size           none                                        <32-bit size>
         0x03        get_max_tx_size           none                                        <32-bit size>
-        0x04        toggle_io                 <8-bit IO_STATE>                            <ACK> <8-bit IO_STATE>/ <NAK>
-        0x05        get_supported_bus_types   none                                        <ACK> <8-bit mask> / <NAK>
+        0x04        toggle_io                 <8-bit state (0 disabled, else enabled)>    <ACK> <8-bit set state>
+        0x05        get_supported_bus_types   none                                        <ACK> <8-bit mask>
             
     Parallel:
         Command     Description               Parameters                                  Return value
         
-        0x06        set_address_bus_width     <8-bit BUS_WIDTH>                           <ACK> <8-bit BUS_WIDTH> / <NAK>
+        0x06        set_address_bus_width     <8-bit width>                               <ACK> <8-bit set width> / <NAK>
         0x07        set_address_hold_time     <32-bit nsecs>                              <ACK> <32-bit nsec> / <NAK>
         0x08        set_pulse_width_time      <32-bit nsecs>                              <ACK> <32-bit nsecs> / <NAK>
         0x09        parallel_read             <32-bit address> <32-bit nlen>              <ACK> <nbytes> / <NAK>
-        0x0A        parallel_write            <32-bit address> <32-bit nlen> <nbytes>     <ACK>
+        0x0A        parallel_write            <32-bit address> <32-bit nlen> <nbytes>     <ACK> / <NAK>
 
     SPI:
         Command     Description               Parameters                                  Return value
 
-        0x0B        set_spi_clock_freq        <32-bit SPI_CLOCK_FREQ>                     <ACK> <32-bit SPI_CLOCK_FREQ> / <NAK>
-        0x0C        set_spi_mode              <8-bit SPI_MODE>                            <ACK> <8-bit SPI_MODE> / <NAK>
-        0x0D        spi_read                  <32-bit nlen> <nbytes>                      <ACK> <nbytes> / <NAK>
-        0x0E        spi_write                 <32-bit nlen> <nbytes>                      <ACK> / <NAK>
+        0x0B        set_spi_clock_freq        <32-bit frequency>                          <ACK> <32-bit set frequency> / <NAK>
+        0x0C        set_spi_mode              <8-bit mode (0-4, see below)>               <ACK> <8-bit set mode> / <NAK>
+        0x0D        get_supported_spi_modes   none                                        <ACK> <8-bit mask>
+        0x0E        spi_transmit              <32-bit nlen> <nbytes>                      <ACK> <nbytes> / <NAK>
 
     I2C:
         N/A 
+
+
+BUS TYPES:
+    PARALLEL
+    SPI
+    I2C
+
+SPI MODES:
+    MODE 0 - clock logic low, data sampled on rising edge and shifted out on falling edge 
+    MODE 1 - clock logic low, data sampled on falling edge and shifted out on rising edge
+    MODE 2 - clock logic high, data sampled on rising edge and shifted out on falling edge
+    MODE 3 - clock logic high, data sampled on falling edge and shifted out on rising edge
          
-IO_STATE:
-    - IO_DISABLE
-    - IO_ENABLE
-
-BUS_WIDTH:
-    - BUS_WIDTH_8_BITS
-    - BUS_WIDTH_16_BITS
-    - BUS_WIDTH_32_BITS
-     
-SPI_CLOCK_FREQ:
-    - SPI_CLOCK_FREQ_1MHZ
-    - SPI_CLOCK_FREQ_2MHZ
-    - SPI_CLOCK_FREQ_4MHZ
-    - SPI_CLOCK_FREQ_5MHZ
-
-SPI_MODE:
-    - SPI_MODE_0
-    - SPI_MODE_1
-    - SPI_MODE_2
-    - SPI_MODE_3
-
 The parallel write algorithm is 
 
 ```
