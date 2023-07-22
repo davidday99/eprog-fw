@@ -16,20 +16,6 @@ enum BusMode {
     BUS_MODE_I2C = 4,
 };
 
-enum AddressBusWidth {
-    ADDRESS_BUS_WIDTH_8 = 0,
-    ADDRESS_BUS_WIDTH_14 = 1,
-    ADDRESS_BUS_WIDTH_15 = 2,
-    ADDRESS_BUS_WIDTH_16 = 3,
-};
-
-enum SpiFrequency {
-    SPI_FREQ_1MHZ = 0,
-    SPI_FREQ_2MHZ = 1,
-    SPI_FREQ_4MHZ = 2,
-    SPI_FREQ_5MHZ = 3,
-};
-
 enum SpiMode {
     SPI_MODE_0 = 1 ,
     SPI_MODE_1 = 2,
