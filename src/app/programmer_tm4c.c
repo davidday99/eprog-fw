@@ -164,6 +164,10 @@ int programmer_ToggleDataIOMode(uint8_t mode) {
     return 1;
 }
 
+int programmer_GetAddressPinCount(void) {
+    return sizeof(Prog->A) / sizeof(Prog->A[0]);
+}
+
 int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
     for (int i = 0; i < busWidth; i++) {
         GPIOPinWrite(Prog->A[i].port, Prog->A[i].pin, address & 1 ? Prog->A[i].pin : 0);
@@ -246,6 +250,18 @@ int programmer_SpiWrite(const char *buf, size_t count) {
 }
 
 int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
+    uint32_t readVal;
+    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
+    for (size_t i = 0; i < count; i++) {
+        SSIDataPut(SSI0_BASE, txbuf[i]);
+        SSIDataGet(SSI0_BASE, &readVal);
+        rxbuf[i] = (char) readVal;
+    }
+    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
+    return 1;
+}
+
+int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     uint32_t readVal;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {

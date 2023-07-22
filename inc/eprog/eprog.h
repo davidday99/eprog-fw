@@ -59,26 +59,26 @@ extern const uint8_t eprog_ACK;
 extern const uint8_t eprog_NAK;
 
 /* General Commands */
-int eprog_Init(const char *rxbuf, size_t rxsize, char *txbuf, size_t txsize);
+int eprog_Init(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize);
 size_t eprog_RunCommand(void);
-uint16_t eprog_getInterfaceVersion(void);
-uint32_t eprog_getSupportedBusTypes(void);
-uint32_t eprog_getBufferSize(void);
-uint8_t eprog_ToggleIo(enum IoState);
+int eprog_nop(const char *in, char *out);
+int eprog_getInterfaceVersion(const char *in, char *out);
+int eprog_getSupportedBusTypes(const char *in, char *out);
+int eprog_getMaxRxSize(const char *in, char *out);
+int eprog_getMaxTxSize(const char *in, char *out);
+int eprog_ToggleIo(const char *in, char *out);
 
 /* Parallel Commands */
-enum AddressBusWidth eprog_getAddressBusWidth(void);
-uint8_t eprog_setAddressBusWidth(enum AddressBusWidth);
-uint8_t eprog_parallelRead(unsigned long address, char *buf, size_t count);
-uint8_t eprog_parallelWrite(unsigned long address, const char *buf, size_t count);
+int eprog_setAddressBusWidth(const char *in, char *out);
+int eprog_setAddressHoldTime(const char *in, char *out);
+int eprog_setAddressPulseWidthTime(const char *in, char *out);
+int eprog_parallelRead(const char *in, char *out);
+int eprog_parallelWrite(const char *in, char *out);
 
 /* SPI Commands */
-enum SpiFrequency eprog_getSpifrequency(void);
-uint8_t eprog_setSpifrequency(enum SpiFrequency);
-uint8_t eprog_getSpiMode(void);
-uint8_t eprog_setSpiMode(enum SpiMode);
-uint8_t spi_read(char *buf, size_t count);
-uint8_t spi_write(const char *buf, size_t count);
+int eprog_setSpifrequency(const char *in, char *out);
+int eprog_setSpiMode(const char *in, char *out);
+int eprog_SpiTransmit(const char *in, char *out);
 
 #endif /* __EPROG_H__ */
 
