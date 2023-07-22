@@ -32,8 +32,6 @@ MKDIR = @mkdir -p $(@D)
 
 all: $(BIN)/$(PROJECT).elf $(BIN)/$(PROJECT).bin
 
-test: $(BIN)/test_$(PROJECT).elf $(BIN)/test_$(PROJECT).bin
-
 clean:
 	-$(RM) $(OBJ) 
 	-$(RM) $(BIN) 
@@ -53,19 +51,12 @@ $(OBJ)/%.o: %.S
 	$(MKDIR)              
 	$(CC) -o $@ $< -c $(INC) $(CFLAGS) $(DEPFLAGS)
 
-$(BIN)/$(PROJECT).elf: $(filter-out %/test.o, $(OBJS)) 
+$(BIN)/$(PROJECT).elf: $(OBJS)
 
-	$(MKDIR)           
-	$(CC) -o $@ $^ $(INC) $(CFLAGS) $(DEPFLAGS) $(LDFLAGS)
-
-$(BIN)/test_$(PROJECT).elf: $(filter-out %/main.o, $(OBJS)) 
 	$(MKDIR)           
 	$(CC) -o $@ $^ $(INC) $(CFLAGS) $(DEPFLAGS) $(LDFLAGS)
 
 $(BIN)/$(PROJECT).bin: $(BIN)/$(PROJECT).elf
-	$(OBJCOPY) -O binary $< $@
-
-$(BIN)/test_$(PROJECT).bin: $(BIN)/test_$(PROJECT).elf
 	$(OBJCOPY) -O binary $< $@
 
 -include $(OBJS:.o=.d)

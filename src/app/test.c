@@ -10,7 +10,7 @@
 static char RxBuf[1024];
 static char TxBuf[1024];
 
-static int testCommands(void) {
+int testCommands(void) {
     size_t response_len = 0;
     int result = 1;
 
@@ -88,15 +88,5 @@ static int testCommands(void) {
     /*result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0, 0, 0, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;*/
 
     return result;
-}
-
-int main(void){
-
-    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
-
-    int result = testCommands();
-   
-    while (1)
-        ;
 }
 
