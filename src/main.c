@@ -1,32 +1,41 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "driverlib/gpio.h"
+#include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/hw_memmap.h"
 #include "string.h"
-#include "eprog.h"
+#include "eprog_server.h"
+#include "transport.h"
 
-#define RUN_TESTS
+#define RUN_SPI_TESTS
 
 static char RxBuf[1024];
 static char TxBuf[1024];
 
-int testCommands(void);
+int testGeneralCommands(void);
+int testParallel(void);
+int testSpi(void);
 
 int main(void){
 
-
-#ifdef RUN_TESTS
-    int result = testCommands();
-
-    while (1)
-        ;
+#ifdef RUN_GENERAL_TESTS
+    int result = testGeneralCommands();
 #endif
 
-    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
-   
-    while (1)
-        ;
+#ifdef RUN_PARALLEL_TESTS
+    int result = testParallel();
+#endif
+    
+#ifdef RUN_SPI_TESTS
+    int result = testSpi();
+#endif
+
+    eprog_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
+
+    while (1) {
+        eprog_serverTick();
+    }
 }
 
