@@ -14,6 +14,8 @@ int testCommands(void) {
     size_t response_len = 0;
     int result = 1;
 
+    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
+
     memcpy(RxBuf, (char[]) {EPROG_CMD_NOP}, 1);
     response_len = eprog_RunCommand();
     result &= response_len == 1;
@@ -72,20 +74,20 @@ int testCommands(void) {
     result &= response_len == 5;
     result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
 
-    /*memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_WRITE, 0x01, 0, 0, 0, 0x06}, 6);*/
-    /*response_len = eprog_RunCommand();*/
-    /*result &= response_len == 1;*/
-    /*result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;*/
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_TRANSMIT, 0x01, 0, 0, 0, 0x06}, 6);
+    response_len = eprog_RunCommand();
+    result &= response_len == 2;
+    result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;
 
-    /*memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_WRITE, 0x7, 0, 0, 0, 0x02, 0, 0, 0xab, 0xcd, 0xef, 0x12}, 12);*/
-    /*response_len = eprog_RunCommand();*/
-    /*result &= response_len == 1;*/
-    /*result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;*/
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_TRANSMIT, 0x7, 0, 0, 0, 0x02, 0, 0, 0xab, 0xcd, 0xef, 0x12}, 12);
+    response_len = eprog_RunCommand();
+    result &= response_len == 8;
+    result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0, 0, 0, 0, 0, 0, 0, 0}, response_len) == 0;
 
-    /*memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_READ, 7, 0, 0, 0, 0x03, 0, 0, 0, 0, 0, 0}, 12);*/
-    /*response_len = eprog_RunCommand();*/
-    /*result &= response_len == 8;*/
-    /*result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0, 0, 0, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;*/
+    memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_TRANSMIT, 7, 0, 0, 0, 0x03, 0, 0, 0, 0, 0, 0}, 12);
+    response_len = eprog_RunCommand();
+    result &= response_len == 8;
+    result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0, 0, 0, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
 
     return result;
 }

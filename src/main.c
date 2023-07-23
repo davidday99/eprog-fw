@@ -16,11 +16,15 @@ int testCommands(void);
 
 int main(void){
 
-    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
 #ifdef RUN_TESTS
     int result = testCommands();
+
+    while (1)
+        ;
 #endif
+
+    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
    
     while (1)
         ;
