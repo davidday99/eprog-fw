@@ -1,5 +1,6 @@
 #include "eprog.h"
 #include "eprog_server.h"
+#include "programmer.h"
 #include "string.h"
 
 static char *RxBuf;
@@ -7,7 +8,47 @@ static char *TxBuf;
 static size_t RxBufSize;
 static size_t TxBufSize;
 
+int (*Commands[])(const char *in, char *out) = {
+    eprog_nop,
+    eprog_getInterfaceVersion,
+    eprog_getMaxRxSize,
+    eprog_getMaxTxSize,
+    eprog_ToggleIo,
+    eprog_getSupportedBusTypes,
+    eprog_setAddressBusWidth,
+    eprog_setAddressHoldTime,
+    eprog_setAddressPulseWidthTime,
+    eprog_parallelRead,
+    eprog_parallelWrite,
+    eprog_setSpifrequency,
+    eprog_setSpiMode,
+    eprog_getSupportedSpiModes,
+    eprog_SpiTransmit,
+};
+
+
 int transport_getData(char *in, size_t count); 
+
+int eprog_Init(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
+    RxBuf = rxbuf;
+    TxBuf = txbuf;
+    RxBufSize = maxRxSize;
+    TxBufSize = maxTxSize;
+    programmer_Init();
+    return 1;
+}
+
+size_t eprog_RunCommand(void) {
+    enum eprog_Command cmd;
+    size_t response_len = 0;
+    memcpy(&cmd, RxBuf, sizeof(cmd));
+
+    int (*func)(const char *in, char *out) = Commands[(uint8_t) cmd];
+
+    response_len = func(RxBuf, TxBuf);
+
+    return response_len;
+}
 
 int eprog_parseCommand(void) {
     unsigned int idx = 0;
@@ -96,4 +137,16 @@ int eprog_parseCommand(void) {
     return validCmd;
 }
 
+
+int eprog_getMaxRxSize(const char *in, char *out) {
+    out[0] = eprog_ACK;
+    memcpy(&out[sizeof(eprog_ACK)], &RxBufSize, sizeof(RxBufSize));
+    return sizeof(eprog_ACK) + sizeof(RxBufSize);
+}
+
+int eprog_getMaxTxSize(const char *in, char *out) {
+    out[0] = eprog_ACK;
+    memcpy(&out[sizeof(eprog_ACK)], &TxBufSize, sizeof(TxBufSize));
+    return sizeof(eprog_ACK) + sizeof(TxBufSize);
+}
 

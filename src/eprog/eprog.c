@@ -8,10 +8,6 @@ const uint8_t eprog_ACK = 0x05;
 const uint8_t eprog_NAK = 0x06;
 static const uint16_t Version = EPROG_VERSION_NUMBER;
 static const uint8_t SupportedBusTypes = EPROG_SUPPORTED_BUS_TYPES;
-static const char *RxBuf;
-static char *TxBuf;
-static size_t RxBufSize;
-static size_t TxBufSize;
 
 static enum BusMode CurrentBusMode = BUS_MODE_NOT_SET;
 static uint8_t CurrentAddressBusWidth = 0;
@@ -24,50 +20,11 @@ static uint32_t ChipEnablePulseWidthTime;
 static inline int switchToParallelBusMode(void);
 static inline int switchToSpiBusMode(void);
 
-int (*Commands[])(const char *in, char *out) = {
-    eprog_nop,
-    eprog_getInterfaceVersion,
-    eprog_getMaxRxSize,
-    eprog_getMaxTxSize,
-    eprog_ToggleIo,
-    eprog_getSupportedBusTypes,
-    eprog_setAddressBusWidth,
-    eprog_setAddressHoldTime,
-    eprog_setAddressPulseWidthTime,
-    eprog_parallelRead,
-    eprog_parallelWrite,
-    eprog_setSpifrequency,
-    eprog_setSpiMode,
-    eprog_getSupportedSpiModes,
-    eprog_SpiTransmit,
-};
-
 /*******************************************
 ********************************************
 *             General Commands             *
 ********************************************
 *******************************************/
-
-size_t eprog_RunCommand(void) {
-    enum eprog_Command cmd;
-    size_t response_len = 0;
-    memcpy(&cmd, RxBuf, sizeof(cmd));
-
-    int (*func)(const char *in, char *out) = Commands[(uint8_t) cmd];
-
-    response_len = func(RxBuf, TxBuf);
-
-    return response_len;
-}
-
-int eprog_Init(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
-    RxBuf = rxbuf;
-    TxBuf = txbuf;
-    RxBufSize = maxRxSize;
-    TxBufSize = maxTxSize;
-    programmer_Init();
-    return 1;
-}
 
 int eprog_nop(const char *in, char *out) {
     out[0] = eprog_ACK;
@@ -84,18 +41,6 @@ int eprog_getSupportedBusTypes(const char *in, char *out) {
     out[0] = eprog_ACK;
     memcpy(&out[sizeof(eprog_ACK)], &SupportedBusTypes, sizeof(SupportedBusTypes));
     return sizeof(eprog_ACK) + sizeof(SupportedBusTypes);
-}
-
-int eprog_getMaxRxSize(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &RxBufSize, sizeof(RxBufSize));
-    return sizeof(eprog_ACK) + sizeof(RxBufSize);
-}
-
-int eprog_getMaxTxSize(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &TxBufSize, sizeof(TxBufSize));
-    return sizeof(eprog_ACK) + sizeof(TxBufSize);
 }
 
 int eprog_ToggleIo(const char *in, char *out) {
@@ -180,7 +125,7 @@ int eprog_parallelRead(const char *in, char *out) {
     memcpy(&address, &in[sizeof(eprog_ACK)], sizeof(address));  
     memcpy(&count, &in[sizeof(eprog_ACK) + sizeof(address)], sizeof(count));  
 
-    if (count + sizeof(eprog_ACK) > TxBufSize || !switchToParallelBusMode()) {
+    if (!switchToParallelBusMode()) {
         out[0] = eprog_NAK;
     } else {
         out[0] = eprog_ACK;
@@ -207,7 +152,7 @@ int eprog_parallelWrite(const char *in, char *out) {
     memcpy(&address, &in[sizeof(eprog_ACK)], sizeof(address));  
     memcpy(&count, &in[sizeof(eprog_ACK) + sizeof(address)], sizeof(count));  
 
-    if (count + sizeof(eprog_ACK) > TxBufSize || !switchToParallelBusMode()) {
+    if (!switchToParallelBusMode()) {
         out[0] = eprog_NAK;        
     } else {
         out[0] = eprog_ACK;
@@ -287,7 +232,7 @@ int eprog_SpiTransmit(const char *in, char *out) {
     int response_len = sizeof(eprog_ACK);
     memcpy(&count, &in[sizeof(eprog_ACK)], sizeof(count));  
 
-    if (count + sizeof(eprog_ACK) > TxBufSize || !switchToSpiBusMode()) {
+    if (!switchToSpiBusMode()) {
         out[0] = eprog_NAK; 
     } else {
         if (programmer_SpiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(eprog_ACK)], count)) {
