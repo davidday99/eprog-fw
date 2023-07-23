@@ -291,6 +291,7 @@ int transport_Init(void) {
 
     UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 115200, 
             (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+    return 1;
 }
 
 int transport_getData(char *in, size_t count) {
