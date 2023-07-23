@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+int transport_Init(void);
 int transport_getData(char *in, size_t count); 
 int transport_putData(const char *out, size_t count); 
 int transport_dataWaiting(void);
