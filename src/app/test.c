@@ -6,15 +6,16 @@
 #include "driverlib/hw_memmap.h"
 #include "string.h"
 #include "eprog.h"
+#include "eprog_server.h"
 
 static char RxBuf[1024];
 static char TxBuf[1024];
 
-int testCommands(void) {
+int testGeneralCommands(void) {
     size_t response_len = 0;
     int result = 1;
 
-    eprog_Init(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
+    eprog_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
     memcpy(RxBuf, (char[]) {EPROG_CMD_NOP}, 1);
     response_len = eprog_RunCommand();
@@ -44,6 +45,15 @@ int testCommands(void) {
     response_len = eprog_RunCommand();
     result &= response_len == 2;
     result &= memcmp(TxBuf, (char[]) {eprog_ACK, 0}, response_len) == 0;
+
+    return result;
+}
+
+int testParallel(void) {
+    size_t response_len = 0;
+    int result = 1;
+
+    eprog_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
     memcpy(RxBuf, (char[]) {EPROG_CMD_SET_ADDRESS_BUS_WIDTH, 15}, 2);
     response_len = eprog_RunCommand();
@@ -78,6 +88,15 @@ int testCommands(void) {
     response_len = eprog_RunCommand();
     result &= response_len == 2;
     result &= memcmp(TxBuf, (char[]) {eprog_ACK}, response_len) == 0;
+
+    return result;
+}
+
+int testSpi(void) {
+    size_t response_len = 0;
+    int result = 1;
+
+    eprog_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
     memcpy(RxBuf, (char[]) {EPROG_CMD_SPI_TRANSMIT, 0x7, 0, 0, 0, 0x02, 0, 0, 0xab, 0xcd, 0xef, 0x12}, 12);
     response_len = eprog_RunCommand();
