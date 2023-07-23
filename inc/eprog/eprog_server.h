@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 
-void eprog_serverTick(void);
-int eprog_parseCommand(void);
+int eprog_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize);
+int eprog_serverTick(void);
 
 #endif /* __EPROG_SERVER_H__ */
 

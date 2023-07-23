@@ -1,6 +1,7 @@
 #include "eprog.h"
 #include "eprog_server.h"
 #include "programmer.h"
+#include "transport.h"
 #include "string.h"
 
 static char *RxBuf;
@@ -26,16 +27,35 @@ int (*Commands[])(const char *in, char *out) = {
     eprog_SpiTransmit,
 };
 
+static int eprog_parseCommand(void);
 
-int transport_getData(char *in, size_t count); 
-
-int eprog_Init(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
+int eprog_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
     RxBuf = rxbuf;
     TxBuf = txbuf;
     RxBufSize = maxRxSize;
     TxBufSize = maxTxSize;
     programmer_Init();
     return 1;
+}
+
+int eprog_serverTick(void) {
+    if (!transport_dataWaiting()) {
+        return 0;
+    }
+
+    int validCmd = eprog_parseCommand();
+    int response_len = 1;
+    
+
+    if (validCmd) {
+        response_len = eprog_RunCommand();
+    } else {
+        TxBuf[0] = eprog_NAK;
+    } 
+
+    transport_putData(TxBuf, response_len);
+
+    return validCmd;
 }
 
 size_t eprog_RunCommand(void) {
@@ -50,7 +70,7 @@ size_t eprog_RunCommand(void) {
     return response_len;
 }
 
-int eprog_parseCommand(void) {
+static int eprog_parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
     int validCmd = 1;
@@ -58,7 +78,6 @@ int eprog_parseCommand(void) {
     idx++;
 
     enum eprog_Command cmd;
-    size_t response_len = 0;
     memcpy(&cmd, RxBuf, sizeof(cmd));
 
     switch (cmd) {
@@ -136,7 +155,6 @@ int eprog_parseCommand(void) {
     
     return validCmd;
 }
-
 
 int eprog_getMaxRxSize(const char *in, char *out) {
     out[0] = eprog_ACK;
