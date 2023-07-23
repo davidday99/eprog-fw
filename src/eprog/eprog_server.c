@@ -35,16 +35,19 @@ int eprog_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSiz
     RxBufSize = maxRxSize;
     TxBufSize = maxTxSize;
     programmer_Init();
+    transport_Init();
     return 1;
 }
 
 int eprog_serverTick(void) {
+    int validCmd = 0;
+    int response_len = 1;
+
     if (!transport_dataWaiting()) {
         return 0;
     }
 
-    int validCmd = eprog_parseCommand();
-    int response_len = 1;
+    validCmd = eprog_parseCommand();
     
 
     if (validCmd) {
