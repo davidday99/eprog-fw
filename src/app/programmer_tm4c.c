@@ -6,7 +6,9 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/ssi.h"
+#include "driverlib/uart.h"
 #include "programmer.h"
+#include "transport.h"
 
 #define PART_TM4C123GH6PM
 #include "driverlib/pin_map.h"
@@ -89,6 +91,8 @@ static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
 
 int programmer_Init(void) {
+    SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
         SysCtlPeripheralEnable(*port);
         while (!SysCtlPeripheralReady(*port))
@@ -275,5 +279,35 @@ int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     }
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
     return 1;
+}
+
+int transport_Init(void) {
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+    UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 115200, 
+            (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+}
+
+int transport_getData(char *in, size_t count) {
+    while (count--) {
+        *in++ = UARTCharGet(UART0_BASE);
+    }
+    return 1;
+}
+
+int transport_putData(const char *out, size_t count) {
+    while (count--) {
+        UARTCharPut(UART0_BASE, *out++);
+    }
+    return 1;
+}
+
+int transport_dataWaiting(void) {
+    return UARTCharsAvail(UART0_BASE);
 }
 
