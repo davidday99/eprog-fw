@@ -64,6 +64,8 @@ int eprog_parallelWrite(const char *in, char *out);
 /* SPI Commands */
 int eprog_setSpifrequency(const char *in, char *out);
 int eprog_setSpiMode(const char *in, char *out);
+int eprog_getSupportedSpiModes(const char *in, char *out);
+
 int eprog_SpiTransmit(const char *in, char *out);
 
 #endif /* __EPROG_H__ */

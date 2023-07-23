@@ -22,7 +22,7 @@ int programmer_DisableChip(void);
 int programmer_SetSpiClockFreq(uint32_t freq);
 uint32_t programmer_GetSpiClockFreq(void);
 int programmer_SetSpiMode(uint8_t mode);
-uint8_t programmer_GetSpiMode(void);
+uint8_t programmer_GetSupportedSpiModes(void);
 int programmer_SpiWrite(const char *buf, size_t count);
 int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count);
 int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count);

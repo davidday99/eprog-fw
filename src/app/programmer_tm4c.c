@@ -235,6 +235,10 @@ int programmer_SetSpiMode(uint8_t mode) {
     return 1;
 }
 
+uint8_t programmer_GetSupportedSpiModes(void) {
+    return 0;
+}
+
 int programmer_SpiWrite(const char *buf, size_t count) {
     uint32_t garbage;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);

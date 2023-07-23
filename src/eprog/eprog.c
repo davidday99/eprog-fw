@@ -14,8 +14,8 @@ static size_t RxBufSize;
 static size_t TxBufSize;
 
 static enum BusMode CurrentBusMode = BUS_MODE_NOT_SET;
-static enum AddressBusWidth CurrentAddressBusWidth = 0;
-static enum SpiFrequency CurrentSpiFrequency = SPI_FREQ_1MHZ;
+static uint8_t CurrentAddressBusWidth = 0;
+static uint32_t CurrentSpiFrequency = 0;
 static enum SpiMode CurrentSpiMode = SPI_MODE_0; 
 
 static uint32_t ParallelAddressHoldTime;
@@ -38,6 +38,7 @@ int (*Commands[])(const char *in, char *out) = {
     eprog_parallelWrite,
     eprog_setSpifrequency,
     eprog_setSpiMode,
+    eprog_getSupportedSpiModes,
     eprog_SpiTransmit,
 };
 
@@ -274,6 +275,13 @@ int eprog_setSpiMode(const char *in, char *out) {
     return response_len;
 }
 
+int eprog_getSupportedSpiModes(const char *in, char *out) {
+    out[0] = eprog_ACK;
+    uint8_t supportedSpiModes = programmer_GetSupportedSpiModes();
+    memcpy(&out[sizeof(eprog_ACK)], &supportedSpiModes, sizeof(supportedSpiModes));
+    return sizeof(eprog_ACK) + sizeof(supportedSpiModes);
+}
+
 int eprog_SpiTransmit(const char *in, char *out) {
     uint32_t count;
     int response_len = sizeof(eprog_ACK);
@@ -282,7 +290,7 @@ int eprog_SpiTransmit(const char *in, char *out) {
     if (count + sizeof(eprog_ACK) > TxBufSize || !switchToSpiBusMode()) {
         out[0] = eprog_NAK; 
     } else {
-        if (programmer_SpiTransmit(&in[sizeof(count)], &out[sizeof(eprog_ACK)], count)) {
+        if (programmer_SpiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(eprog_ACK)], count)) {
             out[0] = eprog_ACK;
             response_len += count;
         } else {
