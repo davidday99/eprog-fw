@@ -135,7 +135,7 @@ int OpenEEPROM_parallelRead(const char *in, char *out) {
         Programmer_toggleCE(0);
         for (size_t i = 0; i < count; i++) {
             Programmer_setAddress(CurrentAddressBusWidth, address + i);
-            Programmer_delay100ns(ParallelAddressHoldTime);
+            Programmer_delay1ns(ParallelAddressHoldTime);
             databuf[i] = Programmer_getData();
         } 
         Programmer_toggleCE(1);
@@ -163,9 +163,9 @@ int OpenEEPROM_parallelWrite(const char *in, char *out) {
         for (size_t i = 0; i < count; i++) {
             Programmer_setAddress(CurrentAddressBusWidth, address + i);
             Programmer_setData(databuf[i]);
-            Programmer_delay100ns(ParallelAddressHoldTime);
+            Programmer_delay1ns(ParallelAddressHoldTime);
             Programmer_toggleCE(0);
-            Programmer_delay100ns(ChipEnablePulseWidthTime);
+            Programmer_delay1ns(ChipEnablePulseWidthTime);
             Programmer_toggleCE(1);
         }
         Programmer_toggleWE(1);

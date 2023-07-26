@@ -211,10 +211,20 @@ uint8_t Programmer_getData(void) {
     return data;
 }
 
-int Programmer_delay100ns(uint32_t delay) {
-    delay *= 8;
-    SysCtlDelay(delay);
-    return 1;
+int Programmer_delay1ns(uint32_t delay) {
+    /* Assume system clock running at 80MHz -> 12.5ns per cycle
+       This means the delay can only be in 12.5ns increments.
+       However, as delay increases the percent error decreases.
+       Generally it should be okay if the delay is a bit longer
+       than requested; shorter could be a problem. 
+       So we round up just to be safe. */
+    if (delay < 13 || delay > (UINT32_MAX / 10)) {
+        return 0;
+    } else {
+        delay = ((delay * 10) + (124)) / 125;  // fixed-point to make 12.5 a whole number
+        SysCtlDelay(delay);
+        return 1;
+    }
 }
 
 int Programmer_enableChip(void) {

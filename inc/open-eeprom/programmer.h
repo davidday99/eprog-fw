@@ -16,7 +16,7 @@ uint8_t Programmer_getData(void);
 int Programmer_toggleCE(uint8_t state);
 int Programmer_toggleOE(uint8_t state);
 int Programmer_toggleWE(uint8_t state);
-int Programmer_delay100ns(uint32_t delay);
+int Programmer_delay1ns(uint32_t delay);
 int Programmer_enableChip(void);
 int Programmer_disableChip(void);
 int Programmer_setSpiClockFreq(uint32_t freq);

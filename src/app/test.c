@@ -66,28 +66,28 @@ int testParallel(void) {
     result &= response_len == 2;
     result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 15}, response_len) == 0;
     
-    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SET_ADDRESS_HOLD_TIME, 0x03, 0x00, 0x00, 0x00}, 5);
+    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SET_ADDRESS_HOLD_TIME, 250, 0x00, 0x00, 0x00}, 5);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 5;
-    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 0x03, 0, 0, 0}, response_len) == 0;
+    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 250, 0, 0, 0}, response_len) == 0;
 
-    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SET_PULSE_WIDTH_TIME, 0x03, 0x00, 0x00, 0x00}, 5);
+    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SET_PULSE_WIDTH_TIME, 250, 0x00, 0x00, 0x00}, 5);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 5;
-    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 0x03, 0, 0, 0}, response_len) == 0;
+    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 250, 0, 0, 0}, response_len) == 0;
 
-    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_PARALLEL_WRITE, 0, 0, 0, 0, 0x04, 0, 0 ,0, 0xab, 0xcd, 0xef, 0x12}, 13);
+    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_PARALLEL_WRITE, 0, 0, 0, 0, 0x04, 0, 0 ,0, 0xab, 0xcd, 0xef, 0x01}, 13);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 1;
     result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK}, response_len) == 0;
 
     // delay some time for the write to complete
-    Programmer_delay100ns(100000);
+    Programmer_delay1ns(10000000);
 
     memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_PARALLEL_READ, 0, 0, 0, 0, 0x4, 0, 0 ,0}, 9);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 5;
-    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
+    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 0xab, 0xcd, 0xef, 0x01}, response_len) == 0;
 
     return result;
 }
