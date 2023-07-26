@@ -1,7 +1,12 @@
-# Open EEPROM Server Reference Implementation
-This repo contains an implementation of the Open EEPROM protocol for embedded devices. The code 
-can be ported to various platforms by implementing the interfaces defined in `programmer.h` and `transport.h`.
+# Open EEPROM Server 
+This repo contains a reference implementation of the Open EEPROM protocol. The code 
+can be ported to new platforms by implementing the interfaces defined in `programmer.h` and `transport.h`.
 These files are located in `inc/open-eeprom`.  
+
+A client communicates with a device running an Open EEPROM server using a byte-stream oriented protocol 
+(see the specification for a list of commands). Serial and TCP-based transport work most naturally with the protocol,
+although there is nothing stopping you from implementing a custom transport layer, as long as from the server's 
+perspective it is reading from a byte stream.
 
 ## Included Make Recipes
 1. `all`: build both an ELF and a flat binary.
