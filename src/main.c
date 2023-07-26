@@ -6,7 +6,7 @@
 #include "driverlib/gpio.h"
 #include "driverlib/hw_memmap.h"
 #include "string.h"
-#include "eprog_server.h"
+#include "open-eeprom_server.h"
 #include "transport.h"
 
 #define RUN_SPI_TESTS
@@ -32,10 +32,10 @@ int main(void){
     int result = testSpi();
 #endif
 
-    eprog_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
+    OpenEEPROM_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
     while (1) {
-        eprog_serverTick();
+        OpenEEPROM_serverTick();
     }
 }
 

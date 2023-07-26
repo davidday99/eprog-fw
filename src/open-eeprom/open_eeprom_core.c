@@ -1,11 +1,11 @@
 #include <stdint.h>
-#include "eprog_conf.h"
+#include "open-eeprom_conf.h"
 #include "string.h"
-#include "eprog.h"
+#include "open-eeprom.h"
 #include "programmer.h"
 
-const uint8_t eprog_ACK = 0x05;
-const uint8_t eprog_NAK = 0x06;
+const uint8_t OpenEEPROM_ACK = 0x05;
+const uint8_t OpenEEPROM_NAK = 0x06;
 static const uint16_t Version = EPROG_VERSION_NUMBER;
 static const uint8_t SupportedBusTypes = EPROG_SUPPORTED_BUS_TYPES;
 
@@ -26,26 +26,26 @@ static inline int switchToSpiBusMode(void);
 ********************************************
 *******************************************/
 
-int eprog_nop(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    return sizeof(eprog_ACK);
+int OpenEEPROM_nop(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    return sizeof(OpenEEPROM_ACK);
 }
 
-int eprog_getInterfaceVersion(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &Version, sizeof(Version));
-    return sizeof(eprog_ACK) + sizeof(Version);
+int OpenEEPROM_getInterfaceVersion(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &Version, sizeof(Version));
+    return sizeof(OpenEEPROM_ACK) + sizeof(Version);
 }
 
-int eprog_getSupportedBusTypes(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &SupportedBusTypes, sizeof(SupportedBusTypes));
-    return sizeof(eprog_ACK) + sizeof(SupportedBusTypes);
+int OpenEEPROM_getSupportedBusTypes(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &SupportedBusTypes, sizeof(SupportedBusTypes));
+    return sizeof(OpenEEPROM_ACK) + sizeof(SupportedBusTypes);
 }
 
-int eprog_ToggleIo(const char *in, char *out) {
+int OpenEEPROM_ToggleIo(const char *in, char *out) {
     uint8_t state;
-    out[0] = eprog_ACK;
+    out[0] = OpenEEPROM_ACK;
     memcpy(&state, &in[sizeof(uint8_t)], sizeof(state));
 
     if (state == 0) {
@@ -55,9 +55,9 @@ int eprog_ToggleIo(const char *in, char *out) {
         programmer_Init(); 
     }
 
-    memcpy(&out[sizeof(eprog_ACK)], &CurrentBusMode, sizeof(CurrentBusMode));
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &CurrentBusMode, sizeof(CurrentBusMode));
 
-    return sizeof(eprog_ACK) + sizeof(state);
+    return sizeof(OpenEEPROM_ACK) + sizeof(state);
 }
 
 /*******************************************
@@ -66,70 +66,70 @@ int eprog_ToggleIo(const char *in, char *out) {
 ********************************************
 *******************************************/
 
-int eprog_setAddressBusWidth(const char *in, char *out) {
+int OpenEEPROM_setAddressBusWidth(const char *in, char *out) {
     uint8_t busWidth, maxBusWidth;
-    int response_len = sizeof(eprog_ACK);
+    int response_len = sizeof(OpenEEPROM_ACK);
 
     maxBusWidth = programmer_GetAddressPinCount();
     memcpy(&busWidth, &in[sizeof(uint8_t)], sizeof(busWidth));
      
     if (busWidth <= maxBusWidth) {
-        out[0] = eprog_ACK;
+        out[0] = OpenEEPROM_ACK;
         CurrentAddressBusWidth = busWidth;
-        memcpy(&out[sizeof(eprog_ACK)], &busWidth, sizeof(busWidth));
+        memcpy(&out[sizeof(OpenEEPROM_ACK)], &busWidth, sizeof(busWidth));
         response_len += sizeof(CurrentAddressBusWidth);
     } else {
-        out[0] = eprog_NAK;
+        out[0] = OpenEEPROM_NAK;
     }
 
     return response_len;
 }
 
-int eprog_setAddressHoldTime(const char *in, char *out) {
+int OpenEEPROM_setAddressHoldTime(const char *in, char *out) {
     uint32_t nsecs;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&nsecs, &in[sizeof(eprog_ACK)], sizeof(nsecs)); 
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&nsecs, &in[sizeof(OpenEEPROM_ACK)], sizeof(nsecs)); 
 
     if (nsecs > 0) {
-        out[0] = eprog_ACK;
+        out[0] = OpenEEPROM_ACK;
         ParallelAddressHoldTime = nsecs;
-        memcpy(&out[sizeof(eprog_ACK)], &nsecs, sizeof(nsecs));
+        memcpy(&out[sizeof(OpenEEPROM_ACK)], &nsecs, sizeof(nsecs));
         response_len += sizeof(nsecs);
     } else {
-        out[0] = eprog_NAK;
+        out[0] = OpenEEPROM_NAK;
     }
     
     return response_len;
 }
 
-int eprog_setAddressPulseWidthTime(const char *in, char *out) {
+int OpenEEPROM_setAddressPulseWidthTime(const char *in, char *out) {
     uint32_t nsecs;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&nsecs, &in[sizeof(eprog_ACK)], sizeof(nsecs)); 
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&nsecs, &in[sizeof(OpenEEPROM_ACK)], sizeof(nsecs)); 
 
     if (nsecs > 0) {
-        out[0] = eprog_ACK;
+        out[0] = OpenEEPROM_ACK;
         ChipEnablePulseWidthTime = nsecs;
-        memcpy(&out[sizeof(eprog_ACK)], &nsecs, sizeof(nsecs));
+        memcpy(&out[sizeof(OpenEEPROM_ACK)], &nsecs, sizeof(nsecs));
         response_len += sizeof(nsecs);
     } else {
-        out[0] = eprog_NAK;
+        out[0] = OpenEEPROM_NAK;
     }
     
     return response_len;
 }
 
-int eprog_parallelRead(const char *in, char *out) {
+int OpenEEPROM_parallelRead(const char *in, char *out) {
     uint32_t address, count;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&address, &in[sizeof(eprog_ACK)], sizeof(address));  
-    memcpy(&count, &in[sizeof(eprog_ACK) + sizeof(address)], sizeof(count));  
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&address, &in[sizeof(OpenEEPROM_ACK)], sizeof(address));  
+    memcpy(&count, &in[sizeof(OpenEEPROM_ACK) + sizeof(address)], sizeof(count));  
 
     if (!switchToParallelBusMode()) {
-        out[0] = eprog_NAK;
+        out[0] = OpenEEPROM_NAK;
     } else {
-        out[0] = eprog_ACK;
-        char *databuf = &out[sizeof(eprog_ACK)];
+        out[0] = OpenEEPROM_ACK;
+        char *databuf = &out[sizeof(OpenEEPROM_ACK)];
         programmer_ToggleDataIOMode(0);
         programmer_ToggleOE(0);
         programmer_ToggleCE(0);
@@ -146,17 +146,17 @@ int eprog_parallelRead(const char *in, char *out) {
     return response_len;
 }
 
-int eprog_parallelWrite(const char *in, char *out) {
+int OpenEEPROM_parallelWrite(const char *in, char *out) {
     uint32_t address, count;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&address, &in[sizeof(eprog_ACK)], sizeof(address));  
-    memcpy(&count, &in[sizeof(eprog_ACK) + sizeof(address)], sizeof(count));  
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&address, &in[sizeof(OpenEEPROM_ACK)], sizeof(address));  
+    memcpy(&count, &in[sizeof(OpenEEPROM_ACK) + sizeof(address)], sizeof(count));  
 
     if (!switchToParallelBusMode()) {
-        out[0] = eprog_NAK;        
+        out[0] = OpenEEPROM_NAK;        
     } else {
-        out[0] = eprog_ACK;
-        const char *databuf = &in[sizeof(eprog_ACK) + sizeof(address) + sizeof(count)];
+        out[0] = OpenEEPROM_ACK;
+        const char *databuf = &in[sizeof(OpenEEPROM_ACK) + sizeof(address) + sizeof(count)];
         programmer_ToggleDataIOMode(1);
         programmer_ToggleOE(1);
         programmer_ToggleWE(0);
@@ -182,64 +182,64 @@ int eprog_parallelWrite(const char *in, char *out) {
 ********************************************
 *******************************************/
 
-int eprog_setSpifrequency(const char *in, char *out) {
+int OpenEEPROM_setSpifrequency(const char *in, char *out) {
     uint32_t freq;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&freq, &in[sizeof(eprog_ACK)], sizeof(freq));
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&freq, &in[sizeof(OpenEEPROM_ACK)], sizeof(freq));
 
     if (freq != CurrentSpiFrequency) {
         if (programmer_SetSpiClockFreq(freq)) {
-            out[0] = eprog_ACK;
+            out[0] = OpenEEPROM_ACK;
             CurrentSpiFrequency = freq;
-            memcpy(&out[sizeof(eprog_ACK)], &freq, sizeof(freq));
+            memcpy(&out[sizeof(OpenEEPROM_ACK)], &freq, sizeof(freq));
             response_len += sizeof(freq);
         } else {
-            out[0] = eprog_NAK;
+            out[0] = OpenEEPROM_NAK;
         }
     }
     
     return response_len;
 }
 
-int eprog_setSpiMode(const char *in, char *out) {
+int OpenEEPROM_setSpiMode(const char *in, char *out) {
     uint8_t mode;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&mode, &in[sizeof(eprog_ACK)], sizeof(mode));
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&mode, &in[sizeof(OpenEEPROM_ACK)], sizeof(mode));
 
     if (mode != CurrentSpiMode) {
         if (programmer_SetSpiMode(mode)) {
-            out[0] = eprog_ACK;
+            out[0] = OpenEEPROM_ACK;
             CurrentSpiMode = mode;
-            memcpy(&out[sizeof(eprog_ACK)], &mode, sizeof(mode));
+            memcpy(&out[sizeof(OpenEEPROM_ACK)], &mode, sizeof(mode));
             response_len += sizeof(mode);
         } else {
-            out[0] = eprog_NAK;
+            out[0] = OpenEEPROM_NAK;
         }
     }
 
     return response_len;
 }
 
-int eprog_getSupportedSpiModes(const char *in, char *out) {
-    out[0] = eprog_ACK;
+int OpenEEPROM_getSupportedSpiModes(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
     uint8_t supportedSpiModes = programmer_GetSupportedSpiModes();
-    memcpy(&out[sizeof(eprog_ACK)], &supportedSpiModes, sizeof(supportedSpiModes));
-    return sizeof(eprog_ACK) + sizeof(supportedSpiModes);
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &supportedSpiModes, sizeof(supportedSpiModes));
+    return sizeof(OpenEEPROM_ACK) + sizeof(supportedSpiModes);
 }
 
-int eprog_SpiTransmit(const char *in, char *out) {
+int OpenEEPROM_SpiTransmit(const char *in, char *out) {
     uint32_t count;
-    int response_len = sizeof(eprog_ACK);
-    memcpy(&count, &in[sizeof(eprog_ACK)], sizeof(count));  
+    int response_len = sizeof(OpenEEPROM_ACK);
+    memcpy(&count, &in[sizeof(OpenEEPROM_ACK)], sizeof(count));  
 
     if (!switchToSpiBusMode()) {
-        out[0] = eprog_NAK; 
+        out[0] = OpenEEPROM_NAK; 
     } else {
-        if (programmer_SpiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(eprog_ACK)], count)) {
-            out[0] = eprog_ACK;
+        if (programmer_SpiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(OpenEEPROM_ACK)], count)) {
+            out[0] = OpenEEPROM_ACK;
             response_len += count;
         } else {
-            out[0] = eprog_NAK; 
+            out[0] = OpenEEPROM_NAK; 
         }
     }
 

@@ -1,5 +1,5 @@
-#include "eprog.h"
-#include "eprog_server.h"
+#include "open-eeprom.h"
+#include "open-eeprom_server.h"
 #include "programmer.h"
 #include "transport.h"
 #include "string.h"
@@ -10,26 +10,26 @@ static size_t RxBufSize;
 static size_t TxBufSize;
 
 int (*Commands[])(const char *in, char *out) = {
-    eprog_nop,
-    eprog_getInterfaceVersion,
-    eprog_getMaxRxSize,
-    eprog_getMaxTxSize,
-    eprog_ToggleIo,
-    eprog_getSupportedBusTypes,
-    eprog_setAddressBusWidth,
-    eprog_setAddressHoldTime,
-    eprog_setAddressPulseWidthTime,
-    eprog_parallelRead,
-    eprog_parallelWrite,
-    eprog_setSpifrequency,
-    eprog_setSpiMode,
-    eprog_getSupportedSpiModes,
-    eprog_SpiTransmit,
+    OpenEEPROM_nop,
+    OpenEEPROM_getInterfaceVersion,
+    OpenEEPROM_getMaxRxSize,
+    OpenEEPROM_getMaxTxSize,
+    OpenEEPROM_ToggleIo,
+    OpenEEPROM_getSupportedBusTypes,
+    OpenEEPROM_setAddressBusWidth,
+    OpenEEPROM_setAddressHoldTime,
+    OpenEEPROM_setAddressPulseWidthTime,
+    OpenEEPROM_parallelRead,
+    OpenEEPROM_parallelWrite,
+    OpenEEPROM_setSpifrequency,
+    OpenEEPROM_setSpiMode,
+    OpenEEPROM_getSupportedSpiModes,
+    OpenEEPROM_SpiTransmit,
 };
 
-static int eprog_parseCommand(void);
+static int OpenEEPROM_parseCommand(void);
 
-int eprog_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
+int OpenEEPROM_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
     RxBuf = rxbuf;
     TxBuf = txbuf;
     RxBufSize = maxRxSize;
@@ -39,7 +39,7 @@ int eprog_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSiz
     return 1;
 }
 
-int eprog_serverTick(void) {
+int OpenEEPROM_serverTick(void) {
     int validCmd = 0;
     int response_len = 1;
 
@@ -47,13 +47,13 @@ int eprog_serverTick(void) {
         return 0;
     }
 
-    validCmd = eprog_parseCommand();
+    validCmd = OpenEEPROM_parseCommand();
     
 
     if (validCmd) {
-        response_len = eprog_RunCommand();
+        response_len = OpenEEPROM_RunCommand();
     } else {
-        TxBuf[0] = eprog_NAK;
+        TxBuf[0] = OpenEEPROM_NAK;
     } 
 
     transport_putData(TxBuf, response_len);
@@ -61,8 +61,8 @@ int eprog_serverTick(void) {
     return validCmd;
 }
 
-size_t eprog_RunCommand(void) {
-    enum eprog_Command cmd;
+size_t OpenEEPROM_RunCommand(void) {
+    enum OpenEEPROM_Command cmd;
     size_t response_len = 0;
     memcpy(&cmd, RxBuf, sizeof(cmd));
 
@@ -73,14 +73,14 @@ size_t eprog_RunCommand(void) {
     return response_len;
 }
 
-static int eprog_parseCommand(void) {
+static int OpenEEPROM_parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
     int validCmd = 1;
     transport_getData(RxBuf, 1); 
     idx++;
 
-    enum eprog_Command cmd;
+    enum OpenEEPROM_Command cmd;
     memcpy(&cmd, RxBuf, sizeof(cmd));
 
     switch (cmd) {
@@ -159,15 +159,15 @@ static int eprog_parseCommand(void) {
     return validCmd;
 }
 
-int eprog_getMaxRxSize(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &RxBufSize, sizeof(RxBufSize));
-    return sizeof(eprog_ACK) + sizeof(RxBufSize);
+int OpenEEPROM_getMaxRxSize(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &RxBufSize, sizeof(RxBufSize));
+    return sizeof(OpenEEPROM_ACK) + sizeof(RxBufSize);
 }
 
-int eprog_getMaxTxSize(const char *in, char *out) {
-    out[0] = eprog_ACK;
-    memcpy(&out[sizeof(eprog_ACK)], &TxBufSize, sizeof(TxBufSize));
-    return sizeof(eprog_ACK) + sizeof(TxBufSize);
+int OpenEEPROM_getMaxTxSize(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &TxBufSize, sizeof(TxBufSize));
+    return sizeof(OpenEEPROM_ACK) + sizeof(TxBufSize);
 }
 

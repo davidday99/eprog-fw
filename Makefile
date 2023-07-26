@@ -2,7 +2,7 @@ PROJECT=main
 
 SRCS=$(wildcard src/*.c) \
 		 $(wildcard src/app/*.c) \
-		 $(wildcard src/eprog/*.c) \
+		 $(wildcard src/open-eeprom/*.c) \
 		 $(wildcard src/*.S) \
 		 $(wildcard src/*.s) \
 		 gcc/startup_gcc.c \
@@ -13,7 +13,7 @@ OBJS=$(addprefix $(OBJ)/, \
 	   $(filter-out %.s %.S, $(SRCS:.c=.o)) \
 	   $(filter-out %.c %.s, $(SRCS:.S=.o)))
 BIN=build
-INC= -Iinc -Iinc/eprog
+INC= -Iinc -Iinc/open-eeprom
 
 LD_SCRIPT=gcc/TM4C123GH6PM.ld 
 DEV=/dev/ttyACM0
