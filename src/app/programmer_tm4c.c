@@ -89,6 +89,7 @@ static Programmer _Prog = {
 static Programmer *Prog = &_Prog;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
+extern uint32_t Programmer_MinimumDelay = 13;
 
 int Programmer_init(void) {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
@@ -218,7 +219,7 @@ int Programmer_delay1ns(uint32_t delay) {
        Generally it should be okay if the delay is a bit longer
        than requested; shorter could be a problem. 
        So we round up just to be safe. */
-    if (delay < 13 || delay > (UINT32_MAX / 10)) {
+    if (delay < Programmer_MinimumDelay || delay > (UINT32_MAX / 10)) {
         return 0;
     } else {
         delay = ((delay * 10) + (124)) / 125;  // fixed-point to make 12.5 a whole number

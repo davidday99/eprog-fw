@@ -9,7 +9,7 @@
 #include "open-eeprom_server.h"
 #include "transport.h"
 
-#define RUN_PARALLEL_TESTS
+//#define RUN_PARALLEL_TESTS
 
 static char RxBuf[1024];
 static char TxBuf[1024];

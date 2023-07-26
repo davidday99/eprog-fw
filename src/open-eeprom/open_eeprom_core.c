@@ -125,7 +125,7 @@ int OpenEEPROM_parallelRead(const char *in, char *out) {
     memcpy(&address, &in[sizeof(OpenEEPROM_ACK)], sizeof(address));  
     memcpy(&count, &in[sizeof(OpenEEPROM_ACK) + sizeof(address)], sizeof(count));  
 
-    if (!switchToParallelBusMode()) {
+    if (ParallelAddressHoldTime < Programmer_MinimumDelay || !switchToParallelBusMode()) {
         out[0] = OpenEEPROM_NAK;
     } else {
         out[0] = OpenEEPROM_ACK;
@@ -152,7 +152,9 @@ int OpenEEPROM_parallelWrite(const char *in, char *out) {
     memcpy(&address, &in[sizeof(OpenEEPROM_ACK)], sizeof(address));  
     memcpy(&count, &in[sizeof(OpenEEPROM_ACK) + sizeof(address)], sizeof(count));  
 
-    if (!switchToParallelBusMode()) {
+    if (ParallelAddressHoldTime < Programmer_MinimumDelay || 
+            ChipEnablePulseWidthTime < Programmer_MinimumDelay ||
+            !switchToParallelBusMode()) {
         out[0] = OpenEEPROM_NAK;        
     } else {
         out[0] = OpenEEPROM_ACK;

@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+extern uint32_t Programmer_MinimumDelay;
+
 int Programmer_init(void);
 int Programmer_initParallel(void);
 int Programmer_initSpi(void);
