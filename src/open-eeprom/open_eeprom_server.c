@@ -28,7 +28,7 @@ int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_spiTransmit,
 };
 
-static int OpenEEPROM_parseCommand(void);
+static int parseCommand(void);
 
 int OpenEEPROM_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
     RxBuf = rxbuf;
@@ -48,7 +48,7 @@ int OpenEEPROM_serverTick(void) {
         return 0;
     }
 
-    validCmd = OpenEEPROM_parseCommand();
+    validCmd = parseCommand();
     
 
     if (validCmd) {
@@ -65,7 +65,7 @@ int OpenEEPROM_serverTick(void) {
 size_t OpenEEPROM_runCommand(const char *in, char *out) {
     enum OpenEEPROM_Command cmd;
     size_t response_len = 0;
-    memcpy(&cmd, RxBuf, sizeof(cmd));
+    memcpy(&cmd, in, sizeof(cmd));
 
     int (*func)(const char *in, char *out) = Commands[(uint8_t) cmd];
 
@@ -74,7 +74,7 @@ size_t OpenEEPROM_runCommand(const char *in, char *out) {
     return response_len;
 }
 
-static int OpenEEPROM_parseCommand(void) {
+static int parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
     int validCmd = 1;
