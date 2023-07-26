@@ -312,3 +312,10 @@ int transport_dataWaiting(void) {
     return UARTCharsAvail(UART0_BASE);
 }
 
+int transport_flush(void) {
+    while (UARTCharsAvail(UART0_BASE)) {
+        UARTCharGet(UART0_BASE);
+    }
+    return 1;
+}
+
