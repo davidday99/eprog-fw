@@ -52,7 +52,7 @@ int OpenEEPROM_serverTick(void) {
     
 
     if (validCmd) {
-        response_len = OpenEEPROM_runCommand();
+        response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     } else {
         TxBuf[0] = OpenEEPROM_NAK;
     } 
@@ -62,14 +62,14 @@ int OpenEEPROM_serverTick(void) {
     return validCmd;
 }
 
-size_t OpenEEPROM_runCommand(void) {
+size_t OpenEEPROM_runCommand(const char *in, char *out) {
     enum OpenEEPROM_Command cmd;
     size_t response_len = 0;
     memcpy(&cmd, RxBuf, sizeof(cmd));
 
     int (*func)(const char *in, char *out) = Commands[(uint8_t) cmd];
 
-    response_len = func(RxBuf, TxBuf);
+    response_len = func(in, out);
 
     return response_len;
 }

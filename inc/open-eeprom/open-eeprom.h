@@ -46,7 +46,7 @@ extern const uint8_t OpenEEPROM_ACK;
 extern const uint8_t OpenEEPROM_NAK;
 
 /* General Commands */
-size_t OpenEEPROM_runCommand(void);
+size_t OpenEEPROM_runCommand(const char *in, char *out);
 int OpenEEPROM_nop(const char *in, char *out);
 int OpenEEPROM_sync(const char *in, char *out);
 int OpenEEPROM_getInterfaceVersion(const char *in, char *out);
