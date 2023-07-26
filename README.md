@@ -1,5 +1,7 @@
-# TM4C Bare Metal Template
-This repo contains boilerplate code for starting a new embedded C project targeting the TM4C MCU.
+# Open EEPROM Server Reference Implementation
+This repo contains an implementation of the Open EEPROM protocol for embedded devices. The code 
+can be ported to various platforms by implementing the interfaces defined in `programmer.h` and `transport.h`.
+These files are located in `inc/open-eeprom`.  
 
 ## Included Make Recipes
 1. `all`: build both an ELF and a flat binary.
