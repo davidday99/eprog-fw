@@ -84,29 +84,29 @@ static int OpenEEPROM_parseCommand(void) {
     memcpy(&cmd, RxBuf, sizeof(cmd));
 
     switch (cmd) {
-        case EPROG_CMD_NOP:
-        case EPROG_CMD_GET_INTERFACE_VERSION:
-        case EPROG_CMD_GET_MAX_RX_SIZE:
-        case EPROG_CMD_GET_MAX_TX_SIZE:
-        case EPROG_CMD_GET_SUPPORTED_BUS_TYPES:
-        case EPROG_CMD_GET_SUPPORTED_SPI_MODES:
+        case OPEN_EEPROM_CMD_NOP:
+        case OPEN_EEPROM_CMD_GET_INTERFACE_VERSION:
+        case OPEN_EEPROM_CMD_GET_MAX_RX_SIZE:
+        case OPEN_EEPROM_CMD_GET_MAX_TX_SIZE:
+        case OPEN_EEPROM_CMD_GET_SUPPORTED_BUS_TYPES:
+        case OPEN_EEPROM_CMD_GET_SUPPORTED_SPI_MODES:
             break;
 
-        case EPROG_CMD_TOGGLE_IO:
-        case EPROG_CMD_SET_ADDRESS_BUS_WIDTH:
-        case EPROG_CMD_SET_SPI_MODE:
+        case OPEN_EEPROM_CMD_TOGGLE_IO:
+        case OPEN_EEPROM_CMD_SET_ADDRESS_BUS_WIDTH:
+        case OPEN_EEPROM_CMD_SET_SPI_MODE:
             transport_getData(&RxBuf[idx], 1);
             idx++;
             break;
         
-        case EPROG_CMD_SET_ADDRESS_HOLD_TIME:
-        case EPROG_CMD_SET_PULSE_WIDTH_TIME:
-        case EPROG_CMD_SET_SPI_CLOCK_FREQ:
+        case OPEN_EEPROM_CMD_SET_ADDRESS_HOLD_TIME:
+        case OPEN_EEPROM_CMD_SET_PULSE_WIDTH_TIME:
+        case OPEN_EEPROM_CMD_SET_SPI_CLOCK_FREQ:
             transport_getData(&RxBuf[idx], 4);
             idx += 4;  
             break;
 
-        case EPROG_CMD_PARALLEL_WRITE:   
+        case OPEN_EEPROM_CMD_PARALLEL_WRITE:   
             transport_getData(&RxBuf[idx], 4);
             idx += 4;
             transport_getData(&RxBuf[idx], 4);
@@ -123,7 +123,7 @@ static int OpenEEPROM_parseCommand(void) {
 
             break;
 
-        case EPROG_CMD_PARALLEL_READ:   
+        case OPEN_EEPROM_CMD_PARALLEL_READ:   
             transport_getData(&RxBuf[idx], 4);
             idx += 4;
             transport_getData(&RxBuf[idx], 4);
@@ -136,7 +136,7 @@ static int OpenEEPROM_parseCommand(void) {
             
             break;
 
-        case EPROG_CMD_SPI_TRANSMIT:
+        case OPEN_EEPROM_CMD_SPI_TRANSMIT:
             transport_getData(&RxBuf[idx], 4);
             memcpy(&nLen, &RxBuf[idx], sizeof(nLen));
             idx += 4;

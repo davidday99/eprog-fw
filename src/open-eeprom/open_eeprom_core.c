@@ -6,8 +6,8 @@
 
 const uint8_t OpenEEPROM_ACK = 0x05;
 const uint8_t OpenEEPROM_NAK = 0x06;
-static const uint16_t Version = EPROG_VERSION_NUMBER;
-static const uint8_t SupportedBusTypes = EPROG_SUPPORTED_BUS_TYPES;
+static const uint16_t Version = OPEN_EEPROM_VERSION_NUMBER;
+static const uint8_t SupportedBusTypes = OPEN_EEPROM_SUPPORTED_BUS_TYPES;
 
 static enum BusMode CurrentBusMode = BUS_MODE_NOT_SET;
 static uint8_t CurrentAddressBusWidth = 0;
