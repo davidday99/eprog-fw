@@ -7,6 +7,7 @@
 #include "string.h"
 #include "open-eeprom.h"
 #include "open-eeprom_server.h"
+#include "programmer.h"
 
 static char RxBuf[1024];
 static char TxBuf[1024];
@@ -18,6 +19,11 @@ int testGeneralCommands(void) {
     OpenEEPROM_serverInit(RxBuf, sizeof(RxBuf), TxBuf, sizeof(TxBuf));
 
     memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_NOP}, 1);
+    response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
+    result &= response_len == 1;
+    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK}, response_len) == 0;
+    
+    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SYNC}, 1);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 1;
     result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK}, response_len) == 0;
@@ -76,18 +82,12 @@ int testParallel(void) {
     result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK}, response_len) == 0;
 
     // delay some time for the write to complete
-    for (int i = 0; i < 20000; i++)
-        ;
+    Programmer_delay100ns(100000);
 
     memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_PARALLEL_READ, 0, 0, 0, 0, 0x4, 0, 0 ,0}, 9);
     response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
     result &= response_len == 5;
     result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK, 0xab, 0xcd, 0xef, 0x12}, response_len) == 0;
-
-    memcpy(RxBuf, (char[]) {OPEN_EEPROM_CMD_SPI_TRANSMIT, 0x01, 0, 0, 0, 0x06}, 6);
-    response_len = OpenEEPROM_runCommand(RxBuf, TxBuf);
-    result &= response_len == 2;
-    result &= memcmp(TxBuf, (char[]) {OpenEEPROM_ACK}, response_len) == 0;
 
     return result;
 }
