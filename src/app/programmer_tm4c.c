@@ -90,7 +90,7 @@ static Programmer *Prog = &_Prog;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
 
-int programmer_Init(void) {
+int Programmer_init(void) {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
@@ -101,7 +101,7 @@ int programmer_Init(void) {
     return 1;
 }
 
-int programmer_InitParallel(void) {
+int Programmer_initParallel(void) {
     GPIOPinTypeGPIOOutput(Prog->WEn.port, Prog->WEn.pin);
     GPIOPinTypeGPIOOutput(Prog->CEn.port, Prog->CEn.pin);
     GPIOPinTypeGPIOOutput(Prog->OEn.port, Prog->OEn.pin);
@@ -117,7 +117,7 @@ int programmer_InitParallel(void) {
     return 1;
 }
 
-int programmer_InitSpi(void) {
+int Programmer_initSpi(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
     SysCtlPeripheralEnable(Prog->spi.CLK.port);
@@ -148,14 +148,14 @@ int programmer_InitSpi(void) {
 }
 
 // TODO: confirm that this disables peripheral
-int programmer_DisableIOPins(void) {
+int Programmer_disableIOPins(void) {
     for (uint32_t *port = Prog->ports; *port != 0; port++) {
         SysCtlPeripheralDisable(*port);
     }
     return 1;
 }
 
-int programmer_ToggleDataIOMode(uint8_t mode) {
+int Programmer_toggleDataIOMode(uint8_t mode) {
     if (mode == 0) {
         for (int i = 0; i < MAX_DATA_WIDTH; i++) {
             GPIOPinTypeGPIOInput(Prog->IO[i].port, Prog->IO[i].pin);
@@ -168,11 +168,11 @@ int programmer_ToggleDataIOMode(uint8_t mode) {
     return 1;
 }
 
-int programmer_GetAddressPinCount(void) {
+int Programmer_getAddressPinCount(void) {
     return sizeof(Prog->A) / sizeof(Prog->A[0]);
 }
 
-int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
+int Programmer_setAddress(uint8_t busWidth, uint32_t address) {
     for (int i = 0; i < busWidth; i++) {
         GPIOPinWrite(Prog->A[i].port, Prog->A[i].pin, address & 1 ? Prog->A[i].pin : 0);
         address >>= 1;
@@ -180,7 +180,7 @@ int programmer_SetAddress(uint8_t busWidth, uint32_t address) {
     return 1;
 }
 
-int programmer_SetData(uint8_t value) {
+int Programmer_setData(uint8_t value) {
     for (int i = 0; i < MAX_DATA_WIDTH; i++) {
         GPIOPinWrite(Prog->IO[i].port, Prog->IO[i].pin, (value & 1) ? Prog->IO[i].pin : 0);
         value >>= 1;
@@ -188,22 +188,22 @@ int programmer_SetData(uint8_t value) {
     return 1;
 }
 
-int programmer_ToggleCE(uint8_t state) {
+int Programmer_toggleCE(uint8_t state) {
     GPIOPinWrite(Prog->CEn.port, Prog->CEn.pin, state == 0 ? 0 : Prog->CEn.pin); 
     return 1;
 }
 
-int programmer_ToggleOE(uint8_t state) {
+int Programmer_toggleOE(uint8_t state) {
     GPIOPinWrite(Prog->OEn.port, Prog->OEn.pin, state == 0 ? 0 : Prog->OEn.pin); 
     return 1;
 }
 
-int programmer_ToggleWE(uint8_t state) {
+int Programmer_toggleWE(uint8_t state) {
     GPIOPinWrite(Prog->WEn.port, Prog->WEn.pin, state == 0 ? 0 : Prog->WEn.pin); 
     return 1;
 }
 
-uint8_t programmer_GetData(void) {
+uint8_t Programmer_getData(void) {
     uint8_t data = 0;
     for (int i = 0; i < MAX_DATA_WIDTH; i++) {
         data |= (GPIOPinRead(Prog->IO[i].port, Prog->IO[i].pin) ? 1 : 0) << i;
@@ -211,17 +211,17 @@ uint8_t programmer_GetData(void) {
     return data;
 }
 
-int programmer_Delay100ns(uint32_t delay) {
+int Programmer_delay100ns(uint32_t delay) {
     delay *= 8;
     SysCtlDelay(delay);
     return 1;
 }
 
-int programmer_EnableChip(void) {
+int Programmer_enableChip(void) {
     return 1;
 }
 
-int programmer_SetSpiClockFreq(uint32_t freq) {
+int Programmer_setSpiClockFreq(uint32_t freq) {
     SSIDisable(SSI0_BASE);
     CurrentSpiFreq = freq;
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
@@ -230,7 +230,7 @@ int programmer_SetSpiClockFreq(uint32_t freq) {
     return 1;
 }
 
-int programmer_SetSpiMode(uint8_t mode) {
+int Programmer_setSpiMode(uint8_t mode) {
     SSIDisable(SSI0_BASE);
     CurrentSpiMode = mode;
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
@@ -239,11 +239,11 @@ int programmer_SetSpiMode(uint8_t mode) {
     return 1;
 }
 
-uint8_t programmer_GetSupportedSpiModes(void) {
+uint8_t Programmer_getSupportedSpiModes(void) {
     return 0;
 }
 
-int programmer_SpiWrite(const char *buf, size_t count) {
+int Programmer_spiWrite(const char *buf, size_t count) {
     uint32_t garbage;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
@@ -257,7 +257,7 @@ int programmer_SpiWrite(const char *buf, size_t count) {
     return 1;
 }
 
-int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
+int Programmer_spiRead(const char *txbuf, char *rxbuf, size_t count) {
     uint32_t readVal;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
@@ -269,7 +269,7 @@ int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count) {
     return 1;
 }
 
-int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count) {
+int Programmer_spiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     uint32_t readVal;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
@@ -281,7 +281,7 @@ int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     return 1;
 }
 
-int transport_Init(void) {
+int Transport_init(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
@@ -294,28 +294,27 @@ int transport_Init(void) {
     return 1;
 }
 
-int transport_getData(char *in, size_t count) {
+int Transport_getData(char *in, size_t count) {
     while (count--) {
         *in++ = UARTCharGet(UART0_BASE);
     }
     return 1;
 }
 
-int transport_putData(const char *out, size_t count) {
+int Transport_putData(const char *out, size_t count) {
     while (count--) {
         UARTCharPut(UART0_BASE, *out++);
     }
     return 1;
 }
 
-int transport_dataWaiting(void) {
+int Transport_dataWaiting(void) {
     return UARTCharsAvail(UART0_BASE);
 }
 
-int transport_flush(void) {
+int Transport_flush(void) {
     while (UARTCharsAvail(UART0_BASE)) {
         UARTCharGet(UART0_BASE);
     }
     return 1;
 }
-

@@ -3,11 +3,11 @@
 
 #include <stddef.h>
 
-int transport_Init(void);
-int transport_getData(char *in, size_t count); 
-int transport_putData(const char *out, size_t count); 
-int transport_flush(void);
-int transport_dataWaiting(void);
+int Transport_init(void);
+int Transport_getData(char *in, size_t count); 
+int Transport_putData(const char *out, size_t count); 
+int Transport_flush(void);
+int Transport_dataWaiting(void);
 
 #endif /* __TRANSPORT_H__ */
 

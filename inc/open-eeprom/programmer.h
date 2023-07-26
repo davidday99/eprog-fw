@@ -4,28 +4,28 @@
 #include <stdint.h>
 #include <stddef.h>
 
-int programmer_Init(void);
-int programmer_InitParallel(void);
-int programmer_InitSpi(void);
-int programmer_DisableIOPins(void);
-int programmer_ToggleDataIOMode(uint8_t mode);
-int programmer_GetAddressPinCount(void);
-int programmer_SetAddress(uint8_t busWidth, uint32_t address);
-int programmer_SetData(uint8_t data);
-uint8_t programmer_GetData(void);
-int programmer_ToggleCE(uint8_t state);
-int programmer_ToggleOE(uint8_t state);
-int programmer_ToggleWE(uint8_t state);
-int programmer_Delay100ns(uint32_t delay);
-int programmer_EnableChip(void);
-int programmer_DisableChip(void);
-int programmer_SetSpiClockFreq(uint32_t freq);
-uint32_t programmer_GetSpiClockFreq(void);
-int programmer_SetSpiMode(uint8_t mode);
-uint8_t programmer_GetSupportedSpiModes(void);
-int programmer_SpiWrite(const char *buf, size_t count);
-int programmer_SpiRead(const char *txbuf, char *rxbuf, size_t count);
-int programmer_SpiTransmit(const char *txbuf, char *rxbuf, size_t count);
+int Programmer_init(void);
+int Programmer_initParallel(void);
+int Programmer_initSpi(void);
+int Programmer_disableIOPins(void);
+int Programmer_toggleDataIOMode(uint8_t mode);
+int Programmer_getAddressPinCount(void);
+int Programmer_setAddress(uint8_t busWidth, uint32_t address);
+int Programmer_setData(uint8_t data);
+uint8_t Programmer_getData(void);
+int Programmer_toggleCE(uint8_t state);
+int Programmer_toggleOE(uint8_t state);
+int Programmer_toggleWE(uint8_t state);
+int Programmer_delay100ns(uint32_t delay);
+int Programmer_enableChip(void);
+int Programmer_disableChip(void);
+int Programmer_setSpiClockFreq(uint32_t freq);
+uint32_t Programmer_getSpiClockFreq(void);
+int Programmer_setSpiMode(uint8_t mode);
+uint8_t Programmer_getSupportedSpiModes(void);
+int Programmer_spiWrite(const char *buf, size_t count);
+int Programmer_spiRead(const char *txbuf, char *rxbuf, size_t count);
+int Programmer_spiTransmit(const char *txbuf, char *rxbuf, size_t count);
 
 #endif /* __PROGRAMMER_H__ */
 

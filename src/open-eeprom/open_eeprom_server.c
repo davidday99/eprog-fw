@@ -11,10 +11,11 @@ static size_t TxBufSize;
 
 int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_nop,
+    OpenEEPROM_sync,
     OpenEEPROM_getInterfaceVersion,
     OpenEEPROM_getMaxRxSize,
     OpenEEPROM_getMaxTxSize,
-    OpenEEPROM_ToggleIo,
+    OpenEEPROM_toggleIO,
     OpenEEPROM_getSupportedBusTypes,
     OpenEEPROM_setAddressBusWidth,
     OpenEEPROM_setAddressHoldTime,
@@ -24,7 +25,7 @@ int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_setSpifrequency,
     OpenEEPROM_setSpiMode,
     OpenEEPROM_getSupportedSpiModes,
-    OpenEEPROM_SpiTransmit,
+    OpenEEPROM_spiTransmit,
 };
 
 static int OpenEEPROM_parseCommand(void);
@@ -34,8 +35,8 @@ int OpenEEPROM_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t max
     TxBuf = txbuf;
     RxBufSize = maxRxSize;
     TxBufSize = maxTxSize;
-    programmer_Init();
-    transport_Init();
+    Programmer_init();
+    Transport_init();
     return 1;
 }
 
@@ -43,7 +44,7 @@ int OpenEEPROM_serverTick(void) {
     int validCmd = 0;
     int response_len = 1;
 
-    if (!transport_dataWaiting()) {
+    if (!Transport_dataWaiting()) {
         return 0;
     }
 
@@ -51,17 +52,17 @@ int OpenEEPROM_serverTick(void) {
     
 
     if (validCmd) {
-        response_len = OpenEEPROM_RunCommand();
+        response_len = OpenEEPROM_runCommand();
     } else {
         TxBuf[0] = OpenEEPROM_NAK;
     } 
 
-    transport_putData(TxBuf, response_len);
+    Transport_putData(TxBuf, response_len);
 
     return validCmd;
 }
 
-size_t OpenEEPROM_RunCommand(void) {
+size_t OpenEEPROM_runCommand(void) {
     enum OpenEEPROM_Command cmd;
     size_t response_len = 0;
     memcpy(&cmd, RxBuf, sizeof(cmd));
@@ -77,7 +78,7 @@ static int OpenEEPROM_parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
     int validCmd = 1;
-    transport_getData(RxBuf, 1); 
+    Transport_getData(RxBuf, 1); 
     idx++;
 
     enum OpenEEPROM_Command cmd;
@@ -85,6 +86,7 @@ static int OpenEEPROM_parseCommand(void) {
 
     switch (cmd) {
         case OPEN_EEPROM_CMD_NOP:
+        case OPEN_EEPROM_CMD_SYNC:
         case OPEN_EEPROM_CMD_GET_INTERFACE_VERSION:
         case OPEN_EEPROM_CMD_GET_MAX_RX_SIZE:
         case OPEN_EEPROM_CMD_GET_MAX_TX_SIZE:
@@ -95,21 +97,21 @@ static int OpenEEPROM_parseCommand(void) {
         case OPEN_EEPROM_CMD_TOGGLE_IO:
         case OPEN_EEPROM_CMD_SET_ADDRESS_BUS_WIDTH:
         case OPEN_EEPROM_CMD_SET_SPI_MODE:
-            transport_getData(&RxBuf[idx], 1);
+            Transport_getData(&RxBuf[idx], 1);
             idx++;
             break;
         
         case OPEN_EEPROM_CMD_SET_ADDRESS_HOLD_TIME:
         case OPEN_EEPROM_CMD_SET_PULSE_WIDTH_TIME:
         case OPEN_EEPROM_CMD_SET_SPI_CLOCK_FREQ:
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             idx += 4;  
             break;
 
         case OPEN_EEPROM_CMD_PARALLEL_WRITE:   
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             idx += 4;
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             memcpy(&nLen, &RxBuf[idx], sizeof(nLen));
             idx += 4;
             
@@ -117,16 +119,16 @@ static int OpenEEPROM_parseCommand(void) {
             if (nLen+ 9 > RxBufSize) {
                 validCmd = 0;
             } else {
-                transport_getData(&RxBuf[idx], nLen);
+                Transport_getData(&RxBuf[idx], nLen);
                 idx += nLen;
             }
 
             break;
 
         case OPEN_EEPROM_CMD_PARALLEL_READ:   
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             idx += 4;
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             memcpy(&nLen, &RxBuf[idx], sizeof(nLen));
             idx += 4;
 
@@ -137,7 +139,7 @@ static int OpenEEPROM_parseCommand(void) {
             break;
 
         case OPEN_EEPROM_CMD_SPI_TRANSMIT:
-            transport_getData(&RxBuf[idx], 4);
+            Transport_getData(&RxBuf[idx], 4);
             memcpy(&nLen, &RxBuf[idx], sizeof(nLen));
             idx += 4;
             
@@ -146,7 +148,7 @@ static int OpenEEPROM_parseCommand(void) {
             if (nLen + 5  > RxBufSize || nLen + 1 > TxBufSize) {
                 validCmd = 0;
             } else {
-                transport_getData(&RxBuf[idx], nLen);
+                Transport_getData(&RxBuf[idx], nLen);
             }
 
             break;
@@ -157,6 +159,13 @@ static int OpenEEPROM_parseCommand(void) {
     }
     
     return validCmd;
+}
+
+
+int OpenEEPROM_sync(const char *in, char *out) {
+    Transport_flush();
+    out[0] = OpenEEPROM_ACK;
+    return sizeof(OpenEEPROM_ACK);
 }
 
 int OpenEEPROM_getMaxRxSize(const char *in, char *out) {

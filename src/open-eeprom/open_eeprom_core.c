@@ -9,10 +9,10 @@ const uint8_t OpenEEPROM_NAK = 0x06;
 static const uint16_t Version = OPEN_EEPROM_VERSION_NUMBER;
 static const uint8_t SupportedBusTypes = OPEN_EEPROM_SUPPORTED_BUS_TYPES;
 
-static enum BusMode CurrentBusMode = BUS_MODE_NOT_SET;
+static enum OpenEEPROM_BusMode CurrentBusMode = OPEN_EEPROM_BUS_MODE_NOT_SET;
 static uint8_t CurrentAddressBusWidth = 0;
 static uint32_t CurrentSpiFrequency = 0;
-static enum SpiMode CurrentSpiMode = SPI_MODE_0; 
+static enum SpiMode CurrentSpiMode = OPEN_EEPROM_SPI_MODE_0; 
 
 static uint32_t ParallelAddressHoldTime;
 static uint32_t ChipEnablePulseWidthTime;
@@ -43,16 +43,16 @@ int OpenEEPROM_getSupportedBusTypes(const char *in, char *out) {
     return sizeof(OpenEEPROM_ACK) + sizeof(SupportedBusTypes);
 }
 
-int OpenEEPROM_ToggleIo(const char *in, char *out) {
+int OpenEEPROM_toggleIO(const char *in, char *out) {
     uint8_t state;
     out[0] = OpenEEPROM_ACK;
     memcpy(&state, &in[sizeof(uint8_t)], sizeof(state));
 
     if (state == 0) {
-        programmer_DisableIOPins();
-        CurrentBusMode = BUS_MODE_NOT_SET;
+        Programmer_disableIOPins();
+        CurrentBusMode = OPEN_EEPROM_BUS_MODE_NOT_SET;
     } else {
-        programmer_Init(); 
+        Programmer_init(); 
     }
 
     memcpy(&out[sizeof(OpenEEPROM_ACK)], &CurrentBusMode, sizeof(CurrentBusMode));
@@ -70,7 +70,7 @@ int OpenEEPROM_setAddressBusWidth(const char *in, char *out) {
     uint8_t busWidth, maxBusWidth;
     int response_len = sizeof(OpenEEPROM_ACK);
 
-    maxBusWidth = programmer_GetAddressPinCount();
+    maxBusWidth = Programmer_getAddressPinCount();
     memcpy(&busWidth, &in[sizeof(uint8_t)], sizeof(busWidth));
      
     if (busWidth <= maxBusWidth) {
@@ -130,16 +130,16 @@ int OpenEEPROM_parallelRead(const char *in, char *out) {
     } else {
         out[0] = OpenEEPROM_ACK;
         char *databuf = &out[sizeof(OpenEEPROM_ACK)];
-        programmer_ToggleDataIOMode(0);
-        programmer_ToggleOE(0);
-        programmer_ToggleCE(0);
+        Programmer_toggleDataIOMode(0);
+        Programmer_toggleOE(0);
+        Programmer_toggleCE(0);
         for (size_t i = 0; i < count; i++) {
-            programmer_SetAddress(CurrentAddressBusWidth, address + i);
-            programmer_Delay100ns(ParallelAddressHoldTime);
-            databuf[i] = programmer_GetData();
+            Programmer_setAddress(CurrentAddressBusWidth, address + i);
+            Programmer_delay100ns(ParallelAddressHoldTime);
+            databuf[i] = Programmer_getData();
         } 
-        programmer_ToggleCE(1);
-        programmer_ToggleOE(1);
+        Programmer_toggleCE(1);
+        Programmer_toggleOE(1);
         response_len += count;
     }
 
@@ -157,19 +157,19 @@ int OpenEEPROM_parallelWrite(const char *in, char *out) {
     } else {
         out[0] = OpenEEPROM_ACK;
         const char *databuf = &in[sizeof(OpenEEPROM_ACK) + sizeof(address) + sizeof(count)];
-        programmer_ToggleDataIOMode(1);
-        programmer_ToggleOE(1);
-        programmer_ToggleWE(0);
+        Programmer_toggleDataIOMode(1);
+        Programmer_toggleOE(1);
+        Programmer_toggleWE(0);
         for (size_t i = 0; i < count; i++) {
-            programmer_SetAddress(CurrentAddressBusWidth, address + i);
-            programmer_SetData(databuf[i]);
-            programmer_Delay100ns(ParallelAddressHoldTime);
-            programmer_ToggleCE(0);
-            programmer_Delay100ns(ChipEnablePulseWidthTime);
-            programmer_ToggleCE(1);
+            Programmer_setAddress(CurrentAddressBusWidth, address + i);
+            Programmer_setData(databuf[i]);
+            Programmer_delay100ns(ParallelAddressHoldTime);
+            Programmer_toggleCE(0);
+            Programmer_delay100ns(ChipEnablePulseWidthTime);
+            Programmer_toggleCE(1);
         }
-        programmer_ToggleWE(1);
-        programmer_ToggleDataIOMode(0);
+        Programmer_toggleWE(1);
+        Programmer_toggleDataIOMode(0);
     }
 
     return response_len;
@@ -188,7 +188,7 @@ int OpenEEPROM_setSpifrequency(const char *in, char *out) {
     memcpy(&freq, &in[sizeof(OpenEEPROM_ACK)], sizeof(freq));
 
     if (freq != CurrentSpiFrequency) {
-        if (programmer_SetSpiClockFreq(freq)) {
+        if (Programmer_setSpiClockFreq(freq)) {
             out[0] = OpenEEPROM_ACK;
             CurrentSpiFrequency = freq;
             memcpy(&out[sizeof(OpenEEPROM_ACK)], &freq, sizeof(freq));
@@ -207,7 +207,7 @@ int OpenEEPROM_setSpiMode(const char *in, char *out) {
     memcpy(&mode, &in[sizeof(OpenEEPROM_ACK)], sizeof(mode));
 
     if (mode != CurrentSpiMode) {
-        if (programmer_SetSpiMode(mode)) {
+        if (Programmer_setSpiMode(mode)) {
             out[0] = OpenEEPROM_ACK;
             CurrentSpiMode = mode;
             memcpy(&out[sizeof(OpenEEPROM_ACK)], &mode, sizeof(mode));
@@ -222,12 +222,12 @@ int OpenEEPROM_setSpiMode(const char *in, char *out) {
 
 int OpenEEPROM_getSupportedSpiModes(const char *in, char *out) {
     out[0] = OpenEEPROM_ACK;
-    uint8_t supportedSpiModes = programmer_GetSupportedSpiModes();
+    uint8_t supportedSpiModes = Programmer_getSupportedSpiModes();
     memcpy(&out[sizeof(OpenEEPROM_ACK)], &supportedSpiModes, sizeof(supportedSpiModes));
     return sizeof(OpenEEPROM_ACK) + sizeof(supportedSpiModes);
 }
 
-int OpenEEPROM_SpiTransmit(const char *in, char *out) {
+int OpenEEPROM_spiTransmit(const char *in, char *out) {
     uint32_t count;
     int response_len = sizeof(OpenEEPROM_ACK);
     memcpy(&count, &in[sizeof(OpenEEPROM_ACK)], sizeof(count));  
@@ -235,7 +235,7 @@ int OpenEEPROM_SpiTransmit(const char *in, char *out) {
     if (!switchToSpiBusMode()) {
         out[0] = OpenEEPROM_NAK; 
     } else {
-        if (programmer_SpiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(OpenEEPROM_ACK)], count)) {
+        if (Programmer_spiTransmit(&in[sizeof(uint8_t) + sizeof(count)], &out[sizeof(OpenEEPROM_ACK)], count)) {
             out[0] = OpenEEPROM_ACK;
             response_len += count;
         } else {
@@ -247,8 +247,9 @@ int OpenEEPROM_SpiTransmit(const char *in, char *out) {
 }
 
 static inline int switchToParallelBusMode(void) {
-    if ((CurrentBusMode != BUS_MODE_PARALLEL) && (BUS_MODE_PARALLEL & SupportedBusTypes)) {
-        programmer_InitParallel();
+    if ((CurrentBusMode != OPEN_EEPROM_BUS_MODE_PARALLEL) && 
+            (OPEN_EEPROM_BUS_MODE_PARALLEL & SupportedBusTypes)) {
+        Programmer_initParallel();
         return 1;
     } else {
         return 0;
@@ -256,8 +257,9 @@ static inline int switchToParallelBusMode(void) {
 }
 
 static inline int switchToSpiBusMode(void) {
-    if ((CurrentBusMode != BUS_MODE_SPI) && (BUS_MODE_SPI & SupportedBusTypes)) {
-        programmer_InitSpi();
+    if ((CurrentBusMode != OPEN_EEPROM_BUS_MODE_SPI) && 
+            (OPEN_EEPROM_BUS_MODE_SPI & SupportedBusTypes)) {
+        Programmer_initSpi();
         return 1;
     } else {
         return 0;
