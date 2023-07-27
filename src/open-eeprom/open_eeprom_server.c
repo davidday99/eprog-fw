@@ -116,7 +116,7 @@ static int parseCommand(void) {
             idx += 4;
             
             // Account for the 9 bytes already inside the buffer.
-            if (nLen+ 9 > RxBufSize) {
+            if (nLen + 9 > RxBufSize) {
                 validCmd = 0;
             } else {
                 Transport_getData(&RxBuf[idx], nLen);
@@ -132,7 +132,8 @@ static int parseCommand(void) {
             memcpy(&nLen, &RxBuf[idx], sizeof(nLen));
             idx += 4;
 
-            if (nLen + 9 > TxBufSize) {
+            // Account for the status byte inside the buffer.
+            if (nLen + 1 > TxBufSize) {
                 validCmd = 0;
             }
             
