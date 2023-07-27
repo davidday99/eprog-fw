@@ -77,6 +77,7 @@ size_t OpenEEPROM_runCommand(const char *in, char *out) {
 static int parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
+    char nLenBuf[4];
     int validCmd = 1;
     Transport_getData(RxBuf, 1); 
     idx++;
@@ -150,6 +151,18 @@ static int parseCommand(void) {
                 validCmd = 0;
             } else {
                 Transport_getData(&RxBuf[idx], nLen);
+            }
+
+            break;
+
+        case OPEN_EEPROM_CMD_WRITE_BUF:
+            Transport_getData(nLenBuf, 4);
+            memcpy(&nLen, nLenBuf, sizeof(nLen));
+              
+            if (nLen > TxBufSize) {
+                validCmd = 0;
+            } else {
+                Transport_getData(RxBuf, nLen);
             }
 
             break;
