@@ -89,7 +89,7 @@ static Programmer _Prog = {
 static Programmer *Prog = &_Prog;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
-extern uint32_t Programmer_MinimumDelay = 13;
+uint32_t Programmer_MinimumDelay = 13;
 
 int Programmer_init(void) {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
