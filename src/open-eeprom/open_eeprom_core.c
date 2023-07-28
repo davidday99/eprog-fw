@@ -189,15 +189,15 @@ int OpenEEPROM_setSpifrequency(const char *in, char *out) {
     int response_len = sizeof(OpenEEPROM_ACK);
     memcpy(&freq, &in[sizeof(OpenEEPROM_ACK)], sizeof(freq));
 
-    if (freq != CurrentSpiFrequency) {
-        if (Programmer_setSpiClockFreq(freq)) {
-            out[0] = OpenEEPROM_ACK;
-            CurrentSpiFrequency = freq;
-            memcpy(&out[sizeof(OpenEEPROM_ACK)], &freq, sizeof(freq));
-            response_len += sizeof(freq);
-        } else {
-            out[0] = OpenEEPROM_NAK;
-        }
+
+
+    if (switchToSpiBusMode() && Programmer_setSpiClockFreq(freq)) {
+        out[0] = OpenEEPROM_ACK;
+        CurrentSpiFrequency = freq;
+        memcpy(&out[sizeof(OpenEEPROM_ACK)], &freq, sizeof(freq));
+        response_len += sizeof(freq);
+    } else {
+        out[0] = OpenEEPROM_NAK;
     }
     
     return response_len;
@@ -208,15 +208,13 @@ int OpenEEPROM_setSpiMode(const char *in, char *out) {
     int response_len = sizeof(OpenEEPROM_ACK);
     memcpy(&mode, &in[sizeof(OpenEEPROM_ACK)], sizeof(mode));
 
-    if (mode != CurrentSpiMode) {
-        if (Programmer_setSpiMode(mode)) {
-            out[0] = OpenEEPROM_ACK;
-            CurrentSpiMode = mode;
-            memcpy(&out[sizeof(OpenEEPROM_ACK)], &mode, sizeof(mode));
-            response_len += sizeof(mode);
-        } else {
-            out[0] = OpenEEPROM_NAK;
-        }
+    if (switchToSpiBusMode() && Programmer_setSpiMode(mode)) {
+        out[0] = OpenEEPROM_ACK;
+        CurrentSpiMode = mode;
+        memcpy(&out[sizeof(OpenEEPROM_ACK)], &mode, sizeof(mode));
+        response_len += sizeof(mode);
+    } else {
+        out[0] = OpenEEPROM_NAK;
     }
 
     return response_len;
