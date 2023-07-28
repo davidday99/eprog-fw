@@ -63,7 +63,7 @@ int OpenEEPROM_parallelRead(const char *in, char *out);
 int OpenEEPROM_parallelWrite(const char *in, char *out);
 
 /* SPI Commands */
-int OpenEEPROM_setSpifrequency(const char *in, char *out);
+int OpenEEPROM_setSpiFrequency(const char *in, char *out);
 int OpenEEPROM_setSpiMode(const char *in, char *out);
 int OpenEEPROM_getSupportedSpiModes(const char *in, char *out);
 int OpenEEPROM_spiTransmit(const char *in, char *out);

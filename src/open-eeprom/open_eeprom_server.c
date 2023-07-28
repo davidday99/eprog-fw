@@ -22,7 +22,7 @@ int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_setAddressPulseWidthTime,
     OpenEEPROM_parallelRead,
     OpenEEPROM_parallelWrite,
-    OpenEEPROM_setSpifrequency,
+    OpenEEPROM_setSpiFrequency,
     OpenEEPROM_setSpiMode,
     OpenEEPROM_getSupportedSpiModes,
     OpenEEPROM_spiTransmit,

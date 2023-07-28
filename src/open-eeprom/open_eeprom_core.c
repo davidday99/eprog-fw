@@ -184,7 +184,7 @@ int OpenEEPROM_parallelWrite(const char *in, char *out) {
 ********************************************
 *******************************************/
 
-int OpenEEPROM_setSpifrequency(const char *in, char *out) {
+int OpenEEPROM_setSpiFrequency(const char *in, char *out) {
     uint32_t freq;
     int response_len = sizeof(OpenEEPROM_ACK);
     memcpy(&freq, &in[sizeof(OpenEEPROM_ACK)], sizeof(freq));
