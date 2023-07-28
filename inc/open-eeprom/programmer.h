@@ -25,8 +25,6 @@ int Programmer_setSpiClockFreq(uint32_t freq);
 uint32_t Programmer_getSpiClockFreq(void);
 int Programmer_setSpiMode(uint8_t mode);
 uint8_t Programmer_getSupportedSpiModes(void);
-int Programmer_spiWrite(const char *buf, size_t count);
-int Programmer_spiRead(const char *txbuf, char *rxbuf, size_t count);
 int Programmer_spiTransmit(const char *txbuf, char *rxbuf, size_t count);
 
 #endif /* __PROGRAMMER_H__ */

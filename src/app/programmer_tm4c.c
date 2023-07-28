@@ -254,32 +254,6 @@ uint8_t Programmer_getSupportedSpiModes(void) {
     return 0;
 }
 
-int Programmer_spiWrite(const char *buf, size_t count) {
-    uint32_t garbage;
-    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
-    for (size_t i = 0; i < count; i++) {
-        SSIDataPut(SSI0_BASE, buf[i]);
-    }
-    while (SSIBusy(SSI0_BASE))
-        ;
-    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
-    while (SSIDataGetNonBlocking(SSI0_BASE, &garbage))
-        ;
-    return 1;
-}
-
-int Programmer_spiRead(const char *txbuf, char *rxbuf, size_t count) {
-    uint32_t readVal;
-    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);
-    for (size_t i = 0; i < count; i++) {
-        SSIDataPut(SSI0_BASE, txbuf[i]);
-        SSIDataGet(SSI0_BASE, &readVal);
-        rxbuf[i] = (char) readVal;
-    }
-    GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, Prog->spi.CS.pin);
-    return 1;
-}
-
 int Programmer_spiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     uint32_t readVal;
     GPIOPinWrite(Prog->spi.CS.port, Prog->spi.CS.pin, 0);

@@ -162,7 +162,6 @@ static int parseCommand(void) {
     return validCmd;
 }
 
-
 int OpenEEPROM_sync(const char *in, char *out) {
     Transport_flush();
     out[0] = OpenEEPROM_ACK;
