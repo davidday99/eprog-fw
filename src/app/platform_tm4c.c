@@ -135,8 +135,11 @@ int Programmer_initSpi(void) {
 
     GPIOPinTypeGPIOOutput(Prog->spi.CS.port, Prog->spi.CS.pin);
 
-    CurrentSpiMode = SSI_FRF_MOTO_MODE_0;
-    CurrentSpiFreq = 1000000;
+    /* Default to 1MHz, don't need to set CurrentSpiMode
+       because its 0 by default. */
+    if (CurrentSpiFreq == 0) {
+        CurrentSpiFreq = 1000000;
+    }
 
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
             SSI_MODE_MASTER, CurrentSpiFreq, 8);
