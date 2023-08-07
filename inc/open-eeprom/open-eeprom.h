@@ -33,14 +33,13 @@ enum OpenEEPROM_BusMode {
     OPEN_EEPROM_BUS_MODE_I2C = 4,
 };
 
-// TODO: prepend OpenEEPROM
 /**
- * @enum SpiMode
+ * @enum OpenEEPROM_SpiMode
  *
  * All the potential SPI configurations.
  * Not all may be supported by a programmer.
  */
-enum SpiMode {
+enum OpenEEPROM_SpiMode {
     OPEN_EEPROM_SPI_MODE_0 = 1 ,
     OPEN_EEPROM_SPI_MODE_1 = 2,
     OPEN_EEPROM_SPI_MODE_2 = 4,

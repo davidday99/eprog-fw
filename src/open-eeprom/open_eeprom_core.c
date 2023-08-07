@@ -42,7 +42,7 @@ static const uint8_t SupportedBusTypes = OPEN_EEPROM_SUPPORTED_BUS_TYPES;
 static enum OpenEEPROM_BusMode CurrentBusMode = OPEN_EEPROM_BUS_MODE_NOT_SET;
 static uint8_t CurrentAddressBusWidth = 0;
 static uint32_t CurrentSpiFrequency = 0;
-static enum SpiMode CurrentSpiMode = OPEN_EEPROM_SPI_MODE_0; 
+static enum OpenEEPROM_SpiMode CurrentSpiMode = OPEN_EEPROM_SPI_MODE_0; 
 
 static uint32_t ParallelAddressHoldTime;
 static uint32_t ChipEnablePulseWidthTime;
@@ -406,7 +406,7 @@ int OpenEEPROM_setSpiMode(const char *in, char *out) {
  *
  * The value returned is a mask where each set bit  
  * correponds to a supported SPI mode. The values 
- * correspond to @ref SpiMode. 
+ * correspond to @ref OpenEEPROM_SpiMode. 
  *
  * @param out 8-bit mask of supported SPI modes 
  *

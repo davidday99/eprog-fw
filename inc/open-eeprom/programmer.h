@@ -178,7 +178,7 @@ int Programmer_setSpiMode(uint8_t mode);
  * 
  * The value returned is a mask where each set bit  
  * correponds to a supported SPI mode. The values 
- * correspond to @ref SpiMode. 
+ * correspond to @ref OpenEEPROM_SpiMode. 
  *
  * @return 8-bit mask of supported SPI modes
  *
