@@ -146,9 +146,6 @@ int Programmer_toggleWE(uint8_t state);
  */
 int Programmer_delay1ns(uint32_t delay);
 
-int Programmer_enableChip(void);  // TODO:remove
-int Programmer_disableChip(void);  //TODO: remove
-
 /**
  * @brief Set the clock frequency of the SPI peripheral. 
  *

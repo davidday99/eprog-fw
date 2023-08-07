@@ -22,8 +22,7 @@ static char *TxBuf;
 static size_t RxBufSize;
 static size_t TxBufSize;
 
-// TODO: make this static
-int (*Commands[])(const char *in, char *out) = {
+static int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_nop,
     OpenEEPROM_sync,
     OpenEEPROM_getInterfaceVersion,
@@ -133,6 +132,49 @@ size_t OpenEEPROM_runCommand(const char *in, char *out) {
     return response_len;
 }
 
+/**
+ * @brief Flush any data in the transport.
+ *
+ * @return 1
+ */
+int OpenEEPROM_sync(const char *in, char *out) {
+    Transport_flush();
+    out[0] = OpenEEPROM_ACK;
+    return sizeof(OpenEEPROM_ACK);
+}
+
+/**
+ * @brief Return the max size of the receive buffer.
+ *
+ * This determines the max number of bytes
+ * that can be sent in a single command.
+ *
+ * @param out 32-bit receive buffer size
+ *
+ * @return 5
+ */
+int OpenEEPROM_getMaxRxSize(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &RxBufSize, sizeof(RxBufSize));
+    return sizeof(OpenEEPROM_ACK) + sizeof(RxBufSize);
+}
+
+/**
+ * @brief Return the max size of the transmit buffer.
+ *
+ * This determines the max number of bytes
+ * that can be returned from a single response.
+ *
+ * @param out 32-bit transmit buffer size
+ *
+ * @return 5
+ */
+int OpenEEPROM_getMaxTxSize(const char *in, char *out) {
+    out[0] = OpenEEPROM_ACK;
+    memcpy(&out[sizeof(OpenEEPROM_ACK)], &TxBufSize, sizeof(TxBufSize));
+    return sizeof(OpenEEPROM_ACK) + sizeof(TxBufSize);
+}
+
 static int parseCommand(void) {
     unsigned int idx = 0;
     uint32_t nLen;
@@ -219,50 +261,5 @@ static int parseCommand(void) {
     }
     
     return validCmd;
-}
-
-// TODO: move these functions above static functions
-
-/**
- * @brief Flush any data in the transport.
- *
- * @return 1
- */
-int OpenEEPROM_sync(const char *in, char *out) {
-    Transport_flush();
-    out[0] = OpenEEPROM_ACK;
-    return sizeof(OpenEEPROM_ACK);
-}
-
-/**
- * @brief Return the max size of the receive buffer.
- *
- * This determines the max number of bytes
- * that can be sent in a single command.
- *
- * @param out 32-bit receive buffer size
- *
- * @return 5
- */
-int OpenEEPROM_getMaxRxSize(const char *in, char *out) {
-    out[0] = OpenEEPROM_ACK;
-    memcpy(&out[sizeof(OpenEEPROM_ACK)], &RxBufSize, sizeof(RxBufSize));
-    return sizeof(OpenEEPROM_ACK) + sizeof(RxBufSize);
-}
-
-/**
- * @brief Return the max size of the transmit buffer.
- *
- * This determines the max number of bytes
- * that can be returned from a single response.
- *
- * @param out 32-bit transmit buffer size
- *
- * @return 5
- */
-int OpenEEPROM_getMaxTxSize(const char *in, char *out) {
-    out[0] = OpenEEPROM_ACK;
-    memcpy(&out[sizeof(OpenEEPROM_ACK)], &TxBufSize, sizeof(TxBufSize));
-    return sizeof(OpenEEPROM_ACK) + sizeof(TxBufSize);
 }
 
