@@ -1,3 +1,16 @@
+/** 
+ * @file
+ * 
+ * This file contains a server implementation
+ * for handling OpenEEPROM commands.
+ *
+ * It also includes the remaining implementations 
+ * for commands that are related to transport
+ * such as buffer size and syncing. 
+ * These functions follow the same conventions
+ * as those in `open_eeprom_core.c`.
+ */
+
 #include "open-eeprom.h"
 #include "open-eeprom_server.h"
 #include "programmer.h"
@@ -9,6 +22,7 @@ static char *TxBuf;
 static size_t RxBufSize;
 static size_t TxBufSize;
 
+// TODO: make this static
 int (*Commands[])(const char *in, char *out) = {
     OpenEEPROM_nop,
     OpenEEPROM_sync,
@@ -30,7 +44,24 @@ int (*Commands[])(const char *in, char *out) = {
 
 static int parseCommand(void);
 
+/**
+ * @brief Initialize the internal state of the OpenEEPROM server.
+ *
+ * Initialize the receive and transmit buffers and their sizes.
+ * These buffers should be defined in the calling code.
+ *
+ * @param rxbuf buffer from which commands are read
+ * 
+ * @param maxRxSize size of rxbuf
+ *
+ * @param txbuf buffer to which responses are written
+ *
+ * @param maxTxSize size of txbuf
+ *
+ * @return 1 if successful, else 0
+ */
 int OpenEEPROM_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t maxTxSize) {
+    // TODO: error checking
     RxBuf = rxbuf;
     TxBuf = txbuf;
     RxBufSize = maxRxSize;
@@ -40,6 +71,19 @@ int OpenEEPROM_serverInit(char *rxbuf, size_t maxRxSize, char *txbuf, size_t max
     return 1;
 }
 
+/**
+ * @brief Check for and run any pending commands.
+ *
+ * To make use of the server, the caller should 
+ * call this function periodically. For example, 
+ * it could be placed inside of a loop along with 
+ * a function to enter a low-power sleep mode until 
+ * an external event such as new data received.
+ *
+ * @return 1 if a valid command was received and run,
+ *      or 0 if the command was invalid or no command
+ *      was pending
+ */
 int OpenEEPROM_serverTick(void) {
     int validCmd = 0;
     int response_len = 1;
@@ -62,6 +106,21 @@ int OpenEEPROM_serverTick(void) {
     return validCmd;
 }
 
+/**
+ * @brief Run an OpenEEPROM command.
+ * 
+ * Interpret the contents of the input 
+ * buffer as a valid command, run it, and 
+ * write the response to the output buffer.
+ * 
+ * This function does no input validation.
+ *
+ * @param in a well-formed OpenEEPROM command
+ *
+ * @param out response for the command
+ *
+ * @return length in bytes of the response
+ */
 size_t OpenEEPROM_runCommand(const char *in, char *out) {
     enum OpenEEPROM_Command cmd;
     size_t response_len = 0;
@@ -162,18 +221,45 @@ static int parseCommand(void) {
     return validCmd;
 }
 
+// TODO: move these functions above static functions
+
+/**
+ * @brief Flush any data in the transport.
+ *
+ * @return 1
+ */
 int OpenEEPROM_sync(const char *in, char *out) {
     Transport_flush();
     out[0] = OpenEEPROM_ACK;
     return sizeof(OpenEEPROM_ACK);
 }
 
+/**
+ * @brief Return the max size of the receive buffer.
+ *
+ * This determines the max number of bytes
+ * that can be sent in a single command.
+ *
+ * @param out 32-bit receive buffer size
+ *
+ * @return 5
+ */
 int OpenEEPROM_getMaxRxSize(const char *in, char *out) {
     out[0] = OpenEEPROM_ACK;
     memcpy(&out[sizeof(OpenEEPROM_ACK)], &RxBufSize, sizeof(RxBufSize));
     return sizeof(OpenEEPROM_ACK) + sizeof(RxBufSize);
 }
 
+/**
+ * @brief Return the max size of the transmit buffer.
+ *
+ * This determines the max number of bytes
+ * that can be returned from a single response.
+ *
+ * @param out 32-bit transmit buffer size
+ *
+ * @return 5
+ */
 int OpenEEPROM_getMaxTxSize(const char *in, char *out) {
     out[0] = OpenEEPROM_ACK;
     memcpy(&out[sizeof(OpenEEPROM_ACK)], &TxBufSize, sizeof(TxBufSize));

@@ -18,6 +18,7 @@ INC= -Iinc -Iinc/open-eeprom
 LD_SCRIPT=gcc/TM4C123GH6PM.ld 
 DEV=/dev/ttyACM0
 FLASHER=lm4flash
+DOCBUILDER=doxygen
 
 CC = arm-none-eabi-gcc
 OBJCOPY = arm-none-eabi-objcopy
@@ -35,6 +36,11 @@ all: $(BIN)/$(PROJECT).elf $(BIN)/$(PROJECT).bin
 clean:
 	-$(RM) $(OBJ) 
 	-$(RM) $(BIN) 
+
+docs: docs/html 
+
+docs/html:
+	$(DOCBUILDER)
 
 flash: $(BIN)/$(PROJECT).bin
 	$(FLASHER) -S $(DEV) $(BIN)/$(PROJECT).bin

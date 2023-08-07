@@ -1,14 +1,31 @@
+/**
+ * @file
+ *
+ * Data types and signatures related to OpenEEPROM.
+ */
+
 #ifndef __OPEN_EEPROM_H__
 #define __OPEN_EEPROM_H__
 
 #include <stdint.h>
 #include <stddef.h>
 
+/** 
+ * @enum OpenEEPROM_IOState 
+ *
+ * Constants for representing 
+ * whether IO is enabled or disabled.
+ */
 enum OpenEEPROM_IOState {
     OPEN_EEPROM_IO_STATE_DISABLED,
     OPEN_EEPROM_IO_STATE_ENABLED,
 };
 
+/** 
+ * @enum OpenEEPROM_BusMode
+ *
+ * Bus modes supported by OpenEEPROM.
+ */
 enum OpenEEPROM_BusMode {
     OPEN_EEPROM_BUS_MODE_NOT_SET = 0,
     OPEN_EEPROM_BUS_MODE_PARALLEL = 1,
@@ -16,6 +33,13 @@ enum OpenEEPROM_BusMode {
     OPEN_EEPROM_BUS_MODE_I2C = 4,
 };
 
+// TODO: prepend OpenEEPROM
+/**
+ * @enum SpiMode
+ *
+ * All the potential SPI configurations.
+ * Not all may be supported by a programmer.
+ */
 enum SpiMode {
     OPEN_EEPROM_SPI_MODE_0 = 1 ,
     OPEN_EEPROM_SPI_MODE_1 = 2,
@@ -23,6 +47,11 @@ enum SpiMode {
     OPEN_EEPROM_SPI_MODE_3 = 8,
 };
 
+/**
+ * @enum OpenEEPROM_Command
+ *
+ * Commands specified by the OpenEEPROM protocol.
+ */
 enum OpenEEPROM_Command {
     OPEN_EEPROM_CMD_NOP,
     OPEN_EEPROM_CMD_SYNC,

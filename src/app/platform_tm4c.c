@@ -1,3 +1,11 @@
+/**
+ * @file 
+ *
+ * This file contains implementations for the 
+ * `programmer` and `trasnport` interfaces 
+ *  required to implement the OpenEEPROM server
+ *  and commands.
+ */
 
 #include <stdint.h>
 #include <stddef.h>
@@ -16,11 +24,20 @@
 #define MAX_DATA_WIDTH 8
 #define MAX_ADDRESS_WIDTH 15
 
+/**
+ * @struct GpioPin_t 
+ * Representation of a GPIO pin on the TM4C MCU.
+ */
 typedef struct _GpioPin {
     uint32_t port;
     uint8_t pin;
 } GpioPin_t;
 
+
+/**
+ * @struct SpiModule_t 
+ * Representation of a SPI peripheral on the TM4C MCU.
+ */
 typedef struct _SpiModule {
     GpioPin_t CLK;
     GpioPin_t CS;
@@ -28,6 +45,13 @@ typedef struct _SpiModule {
     GpioPin_t TX;
 } SpiModule_t;
 
+/**
+ * @struct Programmer
+ * Representation of a TM4C programmer.
+ *      
+ * Maintains the state of the address and data lines,
+ * control lines, and the SPI peripheral.  
+ */
 typedef struct _Programmer {
     uint32_t ports[10];
     GpioPin_t A[MAX_ADDRESS_WIDTH];
@@ -89,6 +113,11 @@ static Programmer _Prog = {
 static Programmer *Prog = &_Prog;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
+
+/* 
+ * The TM4C has a max clock speed of 80 MHz,
+ * or 12.5 ns per instruction.
+ */
 uint32_t Programmer_MinimumDelay = 13;
 
 int Programmer_init(void) {
