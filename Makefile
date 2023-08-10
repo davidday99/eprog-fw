@@ -25,7 +25,8 @@ OBJCOPY = arm-none-eabi-objcopy
 
 CFLAGS = -g -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -nostdlib -ffreestanding
 CFLAGS += -mfloat-abi=hard -std=c99 -Wextra -Wall -Wno-missing-braces
-LDFLAGS = -Wl,-T$(LD_SCRIPT) -Wl,-eResetISR -Llib -Wl,-l:libdriver.a
+LDFLAGS = -Wl,-T$(LD_SCRIPT) -Wl,-eResetISR -Lcontrib
+LIBS = -Wl,-l:libdriver.a
 DEPFLAGS = -MT $@ -MMD -MP
 
 RM = rm -rf
@@ -59,7 +60,7 @@ $(OBJ)/%.o: %.S
 
 $(BIN)/$(PROJECT).elf: $(OBJS)
 	$(MKDIR)           
-	$(CC) -o $@ $^ $(INC) $(CFLAGS) $(DEPFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(INC) $(CFLAGS) $(DEPFLAGS) $(LDFLAGS) $(LIBS)
 
 $(BIN)/$(PROJECT).bin: $(BIN)/$(PROJECT).elf
 	$(OBJCOPY) -O binary $< $@
