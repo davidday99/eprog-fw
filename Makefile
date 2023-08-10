@@ -37,10 +37,10 @@ clean:
 	-$(RM) $(OBJ) 
 	-$(RM) $(BIN) 
 
-docs: docs/html 
+docs: docs/html docs/latex
 
-docs/html:
-	$(DOCBUILDER)
+docs/%: $(SRCS)
+	$(DOCBUILDER) 
 
 flash: $(BIN)/$(PROJECT).bin
 	$(FLASHER) -S $(DEV) $(BIN)/$(PROJECT).bin
@@ -58,7 +58,6 @@ $(OBJ)/%.o: %.S
 	$(CC) -o $@ $< -c $(INC) $(CFLAGS) $(DEPFLAGS)
 
 $(BIN)/$(PROJECT).elf: $(OBJS)
-
 	$(MKDIR)           
 	$(CC) -o $@ $^ $(INC) $(CFLAGS) $(DEPFLAGS) $(LDFLAGS)
 
