@@ -31,7 +31,7 @@
 typedef struct {
     uint32_t port;
     uint8_t pin;
-} GpioPin;
+} DriverLibGpioPin;
 
 
 /**
@@ -39,11 +39,11 @@ typedef struct {
  * Representation of a SPI peripheral on the TM4C MCU.
  */
 typedef struct {
-    GpioPin CLK;
-    GpioPin CS;
-    GpioPin RX;
-    GpioPin TX;
-} SpiModule;
+    DriverLibGpioPin CLK;
+    DriverLibGpioPin CS;
+    DriverLibGpioPin RX;
+    DriverLibGpioPin TX;
+} DriverLibSpiModule;
 
 /**
  * @struct 
@@ -54,15 +54,15 @@ typedef struct {
  */
 typedef struct {
     uint32_t ports[10];
-    GpioPin A[MAX_ADDRESS_WIDTH];
-    GpioPin IO[MAX_DATA_WIDTH];
-    GpioPin WEn;
-    GpioPin OEn;
-    GpioPin CEn;
-    SpiModule spi;
-} Programmer;
+    DriverLibGpioPin A[MAX_ADDRESS_WIDTH];
+    DriverLibGpioPin IO[MAX_DATA_WIDTH];
+    DriverLibGpioPin WEn;
+    DriverLibGpioPin OEn;
+    DriverLibGpioPin CEn;
+    DriverLibSpiModule spi;
+} DriverLibProgrammer;
 
-static Programmer Prog = {
+static DriverLibProgrammer Prog = {
     .ports = {
         SYSCTL_PERIPH_GPIOA,
         SYSCTL_PERIPH_GPIOB,
@@ -110,7 +110,7 @@ static Programmer Prog = {
     }
 };
 
-static Programmer *ProgPtr = &Prog;
+static DriverLibProgrammer *ProgPtr = &Prog;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
 
