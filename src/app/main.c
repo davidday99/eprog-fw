@@ -1,11 +1,5 @@
 #include <stdint.h>
 #include <stdbool.h>
-#include "driverlib/gpio.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "driverlib/hw_memmap.h"
-#include "string.h"
 #include "open-eeprom_server.h"
 #include "transport.h"
 
