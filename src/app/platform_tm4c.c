@@ -62,7 +62,7 @@ typedef struct {
     DriverLibSpiModule spi;
 } DriverLibProgrammer;
 
-static DriverLibProgrammer Prog = {
+static DriverLibProgrammer Progr = {
     .ports = {
         SYSCTL_PERIPH_GPIOA,
         SYSCTL_PERIPH_GPIOB,
@@ -110,7 +110,7 @@ static DriverLibProgrammer Prog = {
     }
 };
 
-static DriverLibProgrammer *ProgPtr = &Prog;
+static DriverLibProgrammer *ProgrPtr = &Progr;
 static uint32_t CurrentSpiMode;
 static uint32_t CurrentSpiFreq;
 
@@ -123,7 +123,7 @@ uint32_t Programmer_MinimumDelay = 13;
 int Programmer_init(void) {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
 
-    for (uint32_t *port = ProgPtr->ports; *port != 0; port++) {
+    for (uint32_t *port = ProgrPtr->ports; *port != 0; port++) {
         SysCtlPeripheralEnable(*port);
         while (!SysCtlPeripheralReady(*port))
             ;
@@ -132,16 +132,16 @@ int Programmer_init(void) {
 }
 
 int Programmer_initParallel(void) {
-    GPIOPinTypeGPIOOutput(ProgPtr->WEn.port, ProgPtr->WEn.pin);
-    GPIOPinTypeGPIOOutput(ProgPtr->CEn.port, ProgPtr->CEn.pin);
-    GPIOPinTypeGPIOOutput(ProgPtr->OEn.port, ProgPtr->OEn.pin);
+    GPIOPinTypeGPIOOutput(ProgrPtr->WEn.port, ProgrPtr->WEn.pin);
+    GPIOPinTypeGPIOOutput(ProgrPtr->CEn.port, ProgrPtr->CEn.pin);
+    GPIOPinTypeGPIOOutput(ProgrPtr->OEn.port, ProgrPtr->OEn.pin);
 
-    GPIOPinWrite(ProgPtr->WEn.port, ProgPtr->WEn.pin, ProgPtr->WEn.pin);
-    GPIOPinWrite(ProgPtr->CEn.port, ProgPtr->CEn.pin, ProgPtr->CEn.pin);
-    GPIOPinWrite(ProgPtr->OEn.port, ProgPtr->OEn.pin, ProgPtr->OEn.pin);
+    GPIOPinWrite(ProgrPtr->WEn.port, ProgrPtr->WEn.pin, ProgrPtr->WEn.pin);
+    GPIOPinWrite(ProgrPtr->CEn.port, ProgrPtr->CEn.pin, ProgrPtr->CEn.pin);
+    GPIOPinWrite(ProgrPtr->OEn.port, ProgrPtr->OEn.pin, ProgrPtr->OEn.pin);
 
     for (int i = 0; i < MAX_ADDRESS_WIDTH; i++ ) {
-        GPIOPinTypeGPIOOutput(ProgPtr->A[i].port, ProgPtr->A[i].pin);
+        GPIOPinTypeGPIOOutput(ProgrPtr->A[i].port, ProgrPtr->A[i].pin);
     }    
 
     return 1;
@@ -150,10 +150,10 @@ int Programmer_initParallel(void) {
 int Programmer_initSpi(void) {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
-    SysCtlPeripheralEnable(ProgPtr->spi.CLK.port);
-    SysCtlPeripheralEnable(ProgPtr->spi.CS.port);
-    SysCtlPeripheralEnable(ProgPtr->spi.RX.port);
-    SysCtlPeripheralEnable(ProgPtr->spi.TX.port);
+    SysCtlPeripheralEnable(ProgrPtr->spi.CLK.port);
+    SysCtlPeripheralEnable(ProgrPtr->spi.CS.port);
+    SysCtlPeripheralEnable(ProgrPtr->spi.RX.port);
+    SysCtlPeripheralEnable(ProgrPtr->spi.TX.port);
 
     GPIOPinConfigure(GPIO_PA2_SSI0CLK);
     GPIOPinConfigure(GPIO_PA4_SSI0RX);
@@ -162,7 +162,7 @@ int Programmer_initSpi(void) {
     GPIOPinTypeSSI(GPIO_PORTA_BASE, 
                      GPIO_PIN_5 | GPIO_PIN_4 | GPIO_PIN_2);
 
-    GPIOPinTypeGPIOOutput(ProgPtr->spi.CS.port, ProgPtr->spi.CS.pin);
+    GPIOPinTypeGPIOOutput(ProgrPtr->spi.CS.port, ProgrPtr->spi.CS.pin);
 
     /* Default to 1MHz, don't need to set CurrentSpiMode
        because its 0 by default. */
@@ -173,7 +173,7 @@ int Programmer_initSpi(void) {
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), CurrentSpiMode, 
             SSI_MODE_MASTER, CurrentSpiFreq, 8);
 
-    GPIOPinWrite(ProgPtr->spi.CS.port, ProgPtr->spi.CS.pin, ProgPtr->spi.CS.pin);
+    GPIOPinWrite(ProgrPtr->spi.CS.port, ProgrPtr->spi.CS.pin, ProgrPtr->spi.CS.pin);
 
     SSIEnable(SSI0_BASE);
 
@@ -182,7 +182,7 @@ int Programmer_initSpi(void) {
 
 // TODO: confirm that this disables peripheral
 int Programmer_disableIOPins(void) {
-    for (uint32_t *port = ProgPtr->ports; *port != 0; port++) {
+    for (uint32_t *port = ProgrPtr->ports; *port != 0; port++) {
         SysCtlPeripheralDisable(*port);
     }
     return 1;
@@ -191,23 +191,23 @@ int Programmer_disableIOPins(void) {
 int Programmer_toggleDataIOMode(uint8_t mode) {
     if (mode == 0) {
         for (int i = 0; i < MAX_DATA_WIDTH; i++) {
-            GPIOPinTypeGPIOInput(ProgPtr->IO[i].port, ProgPtr->IO[i].pin);
+            GPIOPinTypeGPIOInput(ProgrPtr->IO[i].port, ProgrPtr->IO[i].pin);
         }
     } else {
         for (int i = 0; i < MAX_DATA_WIDTH; i++) {
-            GPIOPinTypeGPIOOutput(ProgPtr->IO[i].port, ProgPtr->IO[i].pin);
+            GPIOPinTypeGPIOOutput(ProgrPtr->IO[i].port, ProgrPtr->IO[i].pin);
         }
     }
     return 1;
 }
 
 int Programmer_getAddressPinCount(void) {
-    return sizeof(ProgPtr->A) / sizeof(ProgPtr->A[0]);
+    return sizeof(ProgrPtr->A) / sizeof(ProgrPtr->A[0]);
 }
 
 int Programmer_setAddress(uint8_t busWidth, uint32_t address) {
     for (int i = 0; i < busWidth; i++) {
-        GPIOPinWrite(ProgPtr->A[i].port, ProgPtr->A[i].pin, address & 1 ? ProgPtr->A[i].pin : 0);
+        GPIOPinWrite(ProgrPtr->A[i].port, ProgrPtr->A[i].pin, address & 1 ? ProgrPtr->A[i].pin : 0);
         address >>= 1;
     }
     return 1;
@@ -215,31 +215,31 @@ int Programmer_setAddress(uint8_t busWidth, uint32_t address) {
 
 int Programmer_setData(uint8_t value) {
     for (int i = 0; i < MAX_DATA_WIDTH; i++) {
-        GPIOPinWrite(ProgPtr->IO[i].port, ProgPtr->IO[i].pin, (value & 1) ? ProgPtr->IO[i].pin : 0);
+        GPIOPinWrite(ProgrPtr->IO[i].port, ProgrPtr->IO[i].pin, (value & 1) ? ProgrPtr->IO[i].pin : 0);
         value >>= 1;
     }
     return 1;
 }
 
 int Programmer_toggleCE(uint8_t state) {
-    GPIOPinWrite(ProgPtr->CEn.port, ProgPtr->CEn.pin, state == 0 ? 0 : ProgPtr->CEn.pin); 
+    GPIOPinWrite(ProgrPtr->CEn.port, ProgrPtr->CEn.pin, state == 0 ? 0 : ProgrPtr->CEn.pin); 
     return 1;
 }
 
 int Programmer_toggleOE(uint8_t state) {
-    GPIOPinWrite(ProgPtr->OEn.port, ProgPtr->OEn.pin, state == 0 ? 0 : ProgPtr->OEn.pin); 
+    GPIOPinWrite(ProgrPtr->OEn.port, ProgrPtr->OEn.pin, state == 0 ? 0 : ProgrPtr->OEn.pin); 
     return 1;
 }
 
 int Programmer_toggleWE(uint8_t state) {
-    GPIOPinWrite(ProgPtr->WEn.port, ProgPtr->WEn.pin, state == 0 ? 0 : ProgPtr->WEn.pin); 
+    GPIOPinWrite(ProgrPtr->WEn.port, ProgrPtr->WEn.pin, state == 0 ? 0 : ProgrPtr->WEn.pin); 
     return 1;
 }
 
 uint8_t Programmer_getData(void) {
     uint8_t data = 0;
     for (int i = 0; i < MAX_DATA_WIDTH; i++) {
-        data |= (GPIOPinRead(ProgPtr->IO[i].port, ProgPtr->IO[i].pin) ? 1 : 0) << i;
+        data |= (GPIOPinRead(ProgrPtr->IO[i].port, ProgrPtr->IO[i].pin) ? 1 : 0) << i;
     }
     return data;
 }
@@ -288,13 +288,13 @@ uint8_t Programmer_getSupportedSpiModes(void) {
 
 int Programmer_spiTransmit(const char *txbuf, char *rxbuf, size_t count) {
     uint32_t readVal;
-    GPIOPinWrite(ProgPtr->spi.CS.port, ProgPtr->spi.CS.pin, 0);
+    GPIOPinWrite(ProgrPtr->spi.CS.port, ProgrPtr->spi.CS.pin, 0);
     for (size_t i = 0; i < count; i++) {
         SSIDataPut(SSI0_BASE, txbuf[i]);
         SSIDataGet(SSI0_BASE, &readVal);
         rxbuf[i] = (char) readVal;
     }
-    GPIOPinWrite(ProgPtr->spi.CS.port, ProgPtr->spi.CS.pin, ProgPtr->spi.CS.pin);
+    GPIOPinWrite(ProgrPtr->spi.CS.port, ProgrPtr->spi.CS.pin, ProgrPtr->spi.CS.pin);
     return 1;
 }
 
