@@ -10,16 +10,16 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "driverlib/hw_memmap.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "driverlib/ssi.h"
-#include "driverlib/uart.h"
+#include "platforms/tm4c/driverlib/hw_memmap.h"
+#include "platforms/tm4c/driverlib/sysctl.h"
+#include "platforms/tm4c/driverlib/gpio.h"
+#include "platforms/tm4c/driverlib/ssi.h"
+#include "platforms/tm4c/driverlib/uart.h"
 #include "programmer.h"
 #include "transport.h"
 
 #define PART_TM4C123GH6PM
-#include "driverlib/pin_map.h"
+#include "platforms/tm4c/driverlib/pin_map.h"
 
 #define MAX_DATA_WIDTH 8
 #define MAX_ADDRESS_WIDTH 15

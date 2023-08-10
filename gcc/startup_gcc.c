@@ -23,8 +23,8 @@
 //*****************************************************************************
 
 #include <stdint.h>
-#include "driverlib/hw_nvic.h"
-#include "driverlib/hw_types.h"
+#include "platforms/tm4c/driverlib/hw_nvic.h"
+#include "platforms/tm4c/driverlib/hw_types.h"
 
 //*****************************************************************************
 //
