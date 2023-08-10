@@ -42,7 +42,7 @@ DOXYFILE_ENCODING      = UTF-8
 # title of most generated pages and in a few other places.
 # The default value is: My Project.
 
-PROJECT_NAME           = "Programmer Firmware"
+PROJECT_NAME           = "Portable Programmer"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
@@ -919,7 +919,8 @@ WARN_LOGFILE           =
 
 INPUT                  = "src/app" \
                          "src/open-eeprom" \
-                         "inc/open-eeprom"
+                         "inc/open-eeprom" \
+                         "README.md"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
