@@ -1,3 +1,5 @@
+/** @mainpage
+
 # OpenEEPROM Portable Programmer 
 
 This project is the firmware component to OpenEEPROM. It contains a portable implementation of the OpenEEPROM protocol. The code 
