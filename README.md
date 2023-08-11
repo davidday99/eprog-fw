@@ -1,4 +1,3 @@
-/** @mainpage
 
 # OpenEEPROM Portable Programmer 
 
