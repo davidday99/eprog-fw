@@ -17,7 +17,7 @@ These files are located in `inc/open-eeprom/`. See `src/platforms/platform_tm4c.
 ## Compilation
 
 The project is configured for compilation using `gcc`. The makefile is tailored to the TM4C platform, 
-but wih a few changes--mainly compilation flags--the code can be compiled for other platforms as well. Just leave out `platform_tm4c.c`
+but with a few changes--mainly compilation flags--the code can be compiled for other platforms as well. Just leave out `platform_tm4c.c`
 and include your own implementation for a different platform. The makefile includes the following recipes:
 
 1. `all`: build both an ELF and a flat binary.
