@@ -118,7 +118,7 @@ static uint32_t CurrentSpiFreq;
  * The TM4C has a max clock speed of 80 MHz,
  * or 12.5 ns per instruction.
  */
-uint32_t Programmer_MinimumDelay = 13;
+const uint32_t Programmer_MinimumDelay = 13;
 
 int Programmer_init(void) {
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);

@@ -6,8 +6,8 @@
  * devices must implement all of the functions in this header file.
  */
 
-#ifndef __PROGRAMMER_H___
-#define __PROGRAMMER_H___
+#ifndef __PROGRAMMER_H__
+#define __PROGRAMMER_H__
 
 #include <stdint.h>
 #include <stddef.h>
@@ -17,8 +17,7 @@
  *
  * This will depend on the speed of the MCU.
  */
-// TODO: make const
-extern uint32_t Programmer_MinimumDelay;
+extern const uint32_t Programmer_MinimumDelay;
 
 /**
  * @brief Initialize the programmer.
