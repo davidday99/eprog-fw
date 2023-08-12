@@ -190,7 +190,11 @@ uint8_t Programmer_getSupportedSpiModes(void);
  * SPI uses a "push-pull" configuration where each byte transmitted
  * results in a byte received. This function will transmit `count` number
  * of bytes from `txbuf`, and for each byte transmitted it will read the 
- * received byte and write it to `rxbuf`.
+ * received byte and write it to `rxbuf`. 
+ *
+ * This function should automatically lower (or raise, depending on the SPI mode)
+ * the CS line at the beginning of the function and raise (or lower) it 
+ * at the end.
  *
  * Both txbuf and rxbuf should be at least the size of `count`.
  *
