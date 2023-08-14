@@ -1,0 +1,19 @@
+@startuml
+
+node OpenEEPROM {
+  [open-eeprom_server.c] -> [open-eeprom_core.c]
+}
+
+node "Platform Interfaces" {
+  [open-eeprom_server.c] --> [programmer.h]
+  [open-eeprom_server.c] --> [transport.h]
+  [open-eeprom_core.c] --> [programmer.h]
+}
+
+node BSP {
+  [transport.h] --> BSP
+  [programmer.h] --> BSP
+}
+
+@enduml
+

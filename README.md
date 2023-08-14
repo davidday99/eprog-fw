@@ -5,6 +5,8 @@ This project is the firmware component to OpenEEPROM. It contains a portable imp
 can be ported to new platforms by implementing the interfaces defined in `programmer.h` and `transport.h`.
 These files are located in `inc/open-eeprom/`. See `src/platforms/platform_tm4c.c` for an implementation.
 
+![System Design](docs/assets/system-design.png)
+
 ## Project structure 
 
 - Doxygen documentation is in `docs` (must run `make docs` first).
