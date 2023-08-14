@@ -39,9 +39,9 @@ clean:
 	-$(RM) $(OBJ) 
 	-$(RM) $(BIN) 
 
-docs: docs/html docs/latex
+docs: docs/html/index.html docs/latex/index.tex
 
-docs/%: $(SRCS)
+docs/%: $(SRCS) README.md
 	$(DOCBUILDER) 
 
 flash: $(BIN)/$(PROJECT).bin
@@ -68,5 +68,5 @@ $(BIN)/$(PROJECT).bin: $(BIN)/$(PROJECT).elf
 
 -include $(OBJS:.o=.d)
 
-.PHONY: all clean flash
+.PHONY: all docs clean flash
 
